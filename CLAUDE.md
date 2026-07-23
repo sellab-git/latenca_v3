@@ -7,10 +7,13 @@ Curated AI-wall-art shop with an AI advisor. This folder is the **clean rebuild*
 ## Why this folder exists
 `18. Latenca` (the previous version) is now a **read-only reference** — it holds the finished wall/product mockups, business logic, and product decisions D1–D11. Nothing is copied blindly; important pieces migrate here only after the rebuild path is proven. Don't edit 18 from here.
 
+## GitHub = the backbone (no manual copy-paste)
+Repo: **`sellab-git/latenca_v3`** (public, `main`) — https://github.com/sellab-git/latenca_v3. Everything flows through GitHub: Claude Design imports the codebase FROM GitHub and its output comes back through git, not hand-pasting. **Auto-push this repo** (Artur's standing hands-off rule, same as latenca_v2); `private/` never committed.
+
 ## The rebuild pipeline (locked)
 1. **Claude for Chrome** extracts Ideogram 1:1 → exact-value TEXT spec (tokens, component inventory, page blueprints, all states, mobile-first breakpoints). Screenshots don't transfer out of Chrome — the text values are the source of truth.
-2. **Claude Design** imports THIS shadcn codebase + the Chrome spec + its own web capture → rebuilds Ideogram's components AND pages 1:1 as shadcn, checking against our design system.
-3. **DesignSync (`/design-sync`)** hands the result back into this repo, component by component.
+2. **Claude Design** imports this shadcn codebase **from GitHub (`sellab-git/latenca_v3`)** + the Chrome spec + its own web capture → rebuilds Ideogram's components AND pages 1:1 as shadcn, checking against our design system.
+3. **Handoff via git / DesignSync (`/design-sync`)** brings the result back into this repo, component by component; I pull and verify.
 4. **Claude Code (me)** remaps the 1:1 pages onto our business logic (wall composition, slot pick, advisor chat, cart/checkout).
 5. **Recolor last** — retune palette toward warm, gallery-like only after the system + pages exist.
 
