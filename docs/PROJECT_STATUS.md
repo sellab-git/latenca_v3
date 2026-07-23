@@ -8,7 +8,7 @@
 Curated AI wall-art shop with an AI advisor. Solo founder (Artur), non-developer — communicate in **Polish**; code/UI/commits in **English**; UI/prices English/USD/global.
 
 ## Where we are now
-**Pilot SUCCEEDED.** The Ideogram single-image-detail screen is rebuilt **1:1 on shadcn** at `src/app/pilot/image-detail/page.tsx` (commit `65f944a`). Verified in Playwright against the real Ideogram at 1440 (two-column) and 390 (stacked, mobile bottom bar): faithful, zero horizontal overflow, clean console.
+**Pilot SUCCEEDED + polished to 1:1.** The Ideogram single-image-detail screen is rebuilt **1:1 on shadcn** at `src/app/pilot/image-detail/page.tsx`. Verified in Playwright against the real Ideogram across 390/430/768/1024/1440/1920 + dark theme: faithful, zero horizontal overflow, clean console, `pnpm build` static-prerenders it. Polish landed in commit `47ca6ea` (dark theme via account menu, 1024 overflow fix, sidebar label truncation, mobile "Image details | Similar images" switcher measured 1:1 off live Ideogram).
 
 Run it: `pnpm dev` → http://localhost:3000/pilot/image-detail (narrow the window to see the 900px mobile/desktop switch).
 
@@ -20,8 +20,8 @@ Run it: `pnpm dev` → http://localhost:3000/pilot/image-detail (narrow the wind
 5. **Recolor + remap — LATER, separate steps.**
 
 ## Immediate plan (Artur's chosen order: 1 → 3 → 2)
-1. **Polish the pilot screen to 100%** — all 6 breakpoints (390/430/768/1024/1440/1920) + dark theme, so it's the gold-standard reference. Open polish items: dark-theme visual pass, tablet 768/1024 fine-tune, "Prompt Builder" label truncation in sidebar, per-breakpoint image sizing.
-2. **Extract shared blocks into our design system** — pull sidebar, search pill, detail panel, action-grid, thumbnail strip, icon-circle, etc. out of the pilot page into reusable components before duplicates appear.
+1. **[DONE] Polish the pilot screen to 100%** — all 6 breakpoints + dark theme done and verified (commit `47ca6ea`). Only remaining nit if we want it: top thumbnail-strip alignment on mobile (spec says centered; live Ideogram looks slightly left) — left as-is pending Artur's eyeball on a real phone.
+2. **[NEXT] Extract shared blocks into our design system** — pull sidebar, search pill, detail panel, action-grid, thumbnail strip, icon-circle, etc. out of the pilot page into reusable components before duplicates appear. (Started: `PromptBlock` + `DetailRows` already extracted and shared desktop↔mobile.)
 3. **Then the next screens** (Home / My images / generator …) built fast from those blocks.
 
 Only after the shadcn system + screens exist do we **recolor** (warm/gallery) and **remap to our business logic** (wall composition / slot pick / advisor chat / cart-checkout — the product thinking lives in the read-only `18. Latenca` repo + its decisions D1–D11).
