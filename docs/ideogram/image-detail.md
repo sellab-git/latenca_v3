@@ -76,3 +76,27 @@ Two layout regimes; the single structural switch is at **900px**. Sidebar can be
 Illustrative — shows what each slot holds, not text to ship.
 
 Author: priscilamktdsg — "6 months ago" (tooltip Jan 30, 2026, 4:24 AM). Original prompt (Portuguese, ~441 chars): an aerial diagonally-tilted beach photo — crystalline turquoise water with color gradation, white premium loungers/umbrellas, soft shadows, sophisticated calm summer mood, high-res drone, 28mm-equivalent lens, warm late-morning light. Magic prompt (English) begins "An aerial photograph captured with a diagonal tilt, showcasing the stunning depth between crystalline turquoise ocean waters and pristine white sand beach…". Detail values: Type = Generation · Model = Ideogram 3.0 (with "Use model") · Style = Auto · Aspect ratio = 3:4 · Resolution = 864 × 1152 · Rendering = Turbo · Seed = 1434646911 · Created = Jan 30, 2026, 4:24 AM. Buttons: Edit, Remix, Upscale, Remove BG, Layerize text, Open image in…/Open in…, Follow, Use model, See more. ••• menu: Copy image · Remix, Magic Fill, Upscale, Remove background · Describe image, Use as reference, Use as style, Use as character · Add to collection, Report, Mute creator. Open-in menu: JSON editor (disabled), Prompt Builder, Image Studio. Likes: 0. Sidebar: Home, My images, Collections, My likes, Prompt Builder (NEW), Image Studio, AI Apps, Models, More, API Dashboard, API Docs; "12 slow credits left / Resets in 1 day"; Upgrade; user "arturpawlowski".
+
+## 6. Interaction inventory (live-captured 2026-07-23, Playwright on real Ideogram @1440)
+
+Static layout was 1:1; these are the **interactive states** the first pass missed. Measured/opened on the real app.
+
+**Right detail panel — full-height card.** Not a short content block: it's a **card** `320 × 780`, `top:96`, `radius 30px`, bg `rgb(251,251,251)` = `--card` (dark: `--card`). Content sits at the top; the action buttons (Edit/Remix/Upscale/Remove BG/Layerize/Open in) are **pinned to the bottom** (`mt-auto`). So the panel is always tall with a subtle bg; expanding the prompt doesn't change its height. → wrap panel in `bg-card rounded-[30px]`, column, actions `mt-auto`.
+
+**Sidebar bottom = TWO buttons.** The user row is a `~151px` account button (avatar+name) **plus a separate `36px` bell button** — not one combined control. The account button opens the account menu (below); the bell is its own control.
+
+**Account menu (bottom account button).** Popover: header (avatar + `arturpawlowski` + email), `Free · ⚡12 credits left`, **Upgrade plan** (dark, ⚡), then items: View profile · Help & documentation · Manage muted users · Delete account · API · Log out, then a **segmented Light/Dark/Auto** control (⚡ this is where theme lives, per §1), then Terms · Privacy + Discord/X/YouTube icons. → theme is a **segmented control at the foot of this menu**, not standalone checkmark items.
+
+**Tools "More" = inline expander, not a popup.** Clicking **More** expands the Tools list in place to add **Styles · Characters · Canvas · Batch**, and the label flips to **Less**. (Default collapsed: Prompt Builder · Image Studio · AI Apps · Models · More.)
+
+**Sidebar `•••`/right-panel `•••` menu — icons + submenus.** Every item has a leading icon; grouped **Copy image** / *Edit* (Remix, Magic Fill, Upscale, Remove background) / *Reference* (Describe image, Use as reference, Use as style, Use as character) / *Manage* (Add to collection ▸, Report ▸, Mute creator). **Add to collection** and **Report** open **submenus** (chevron-right). Our build had the right items but text-only and no submenus.
+
+**Collections nav — hover reveals a `›` expander** (+ accent hover bg) to open sub-collections inline.
+
+**Sidebar collapse.** A toggle by the logo collapses the rail to icon-only; on the collapsed/logo area a hover swaps the mark back to the expand affordance. (Logo = full "Ideogram" wordmark expanded; glyph-only collapsed.)
+
+**"Personal" (top) = workspace switcher dropdown** (chevron-down) — opens a menu to switch/create workspaces.
+
+**Prompt row icons** (right of Prompt / Magic prompt): **Copy prompt** and **Use prompt** (+) — feed the prompt to the generator. Worth wiring later.
+
+**Palette nit:** the `NEW` badge on "Prompt Builder" is **red**, not primary-purple (recolor-step detail).
