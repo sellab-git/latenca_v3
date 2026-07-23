@@ -36,13 +36,17 @@ import {
   Bell,
   Gem,
   ExternalLink,
+  Sun,
+  Moon,
+  Monitor,
+  Check,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Collapsible,
   CollapsibleContent,
@@ -97,6 +101,43 @@ const ACTIONS = [
 const PROMPT =
   "Aerial photograph with a slight diagonal tilt, showing the depth between sea and sand. Crystalline turquoise water with color gradation, gentle foam near the shore. White premium-fabric loungers and umbrellas, elegantly arranged. Soft shadows on the sand. A sophisticated, calm, exclusive summer mood. Captured with a high-resolution drone, 28mm-equivalent lens, warm late-morning light.";
 
+/* ── theme (Light / Dark / Auto — lives in the account menu, per Ideogram) ── */
+type ThemeMode = "light" | "dark" | "auto";
+
+function isThemeMode(v: unknown): v is ThemeMode {
+  return v === "light" || v === "dark" || v === "auto";
+}
+
+function useTheme() {
+  // read the persisted choice lazily on the client (server → "auto"); no
+  // load-then-set effect chain, so no cascading render / localStorage clobber.
+  const [mode, setMode] = React.useState<ThemeMode>(() => {
+    if (typeof window === "undefined") return "auto";
+    const saved = localStorage.getItem("theme");
+    return isThemeMode(saved) ? saved : "auto";
+  });
+  // apply the resolved class + persist; Auto follows the OS and reacts live
+  React.useEffect(() => {
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    const apply = () => {
+      const dark = mode === "dark" || (mode === "auto" && mq.matches);
+      document.documentElement.classList.toggle("dark", dark);
+    };
+    apply();
+    localStorage.setItem("theme", mode);
+    if (mode !== "auto") return;
+    mq.addEventListener("change", apply);
+    return () => mq.removeEventListener("change", apply);
+  }, [mode]);
+  return { mode, setMode };
+}
+
+const THEME_OPTIONS: { value: ThemeMode; label: string; icon: React.ElementType }[] = [
+  { value: "light", label: "Light", icon: Sun },
+  { value: "dark", label: "Dark", icon: Moon },
+  { value: "auto", label: "Auto", icon: Monitor },
+];
+
 /* ── small building blocks ── */
 function IconCircle({
   children,
@@ -143,7 +184,7 @@ function NavItem({
   return (
     <button
       className={cn(
-        "flex h-9 w-full items-center gap-3 rounded-md px-3 text-[13px] font-semibold hover:bg-accent",
+        "flex h-9 w-full items-center rounded-md px-3 text-[13px] font-semibold hover:bg-accent",
         muted ? "text-muted-foreground" : "text-foreground",
         collapsed && "justify-center px-0",
       )}
@@ -151,9 +192,11 @@ function NavItem({
       <Icon className="size-5 shrink-0" strokeWidth={1.75} />
       {!collapsed && (
         <>
-          <span className="truncate">{label}</span>
+          {/* tight gaps + snug badge so "Prompt Builder" fits even when the
+              sidebar scrollbar is present (steals ~15px of content width). */}
+          <span className="ml-2 min-w-0 truncate">{label}</span>
           {badge && (
-            <Badge className="ml-auto h-4 rounded bg-primary px-1.5 text-[10px] font-semibold text-primary-foreground">
+            <Badge className="ml-1 h-4 shrink-0 rounded bg-primary px-0.5 text-[10px] font-semibold text-primary-foreground">
               {badge}
             </Badge>
           )}
@@ -164,7 +207,15 @@ function NavItem({
 }
 
 /* ── sidebar (desktop) ── */
-function Sidebar({ collapsed }: { collapsed: boolean }) {
+function Sidebar({
+  collapsed,
+  mode,
+  onModeChange,
+}: {
+  collapsed: boolean;
+  mode: ThemeMode;
+  onModeChange: (m: ThemeMode) => void;
+}) {
   return (
     <div
       className={cn(
@@ -233,17 +284,37 @@ function Sidebar({ collapsed }: { collapsed: boolean }) {
             </Button>
           </div>
         )}
-        <div className={cn("flex items-center gap-2", collapsed && "justify-center")}>
-          <Avatar className="size-8">
-            <AvatarFallback className="bg-muted text-[11px]">A</AvatarFallback>
-          </Avatar>
-          {!collapsed && (
-            <>
-              <span className="text-[13px] font-semibold">arturpawlowski</span>
-              <Bell className="ml-auto size-4 text-muted-foreground" />
-            </>
-          )}
-        </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button
+              aria-label="Account menu"
+              className={cn(
+                "flex w-full items-center gap-2 rounded-lg px-1 py-1 hover:bg-accent",
+                collapsed && "justify-center px-0",
+              )}
+            >
+              <Avatar className="size-8">
+                <AvatarFallback className="bg-muted text-[11px]">A</AvatarFallback>
+              </Avatar>
+              {!collapsed && (
+                <>
+                  <span className="text-[13px] font-semibold">arturpawlowski</span>
+                  <Bell className="ml-auto size-4 text-muted-foreground" />
+                </>
+              )}
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" side="top" className="w-[212px]">
+            <DropdownMenuLabel className="text-muted-foreground">Theme</DropdownMenuLabel>
+            {THEME_OPTIONS.map((t) => (
+              <DropdownMenuItem key={t.value} onClick={() => onModeChange(t.value)}>
+                <t.icon className="size-4" />
+                {t.label}
+                {mode === t.value && <Check className="ml-auto size-4" />}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </div>
   );
@@ -320,37 +391,8 @@ function DetailPanel() {
         </Button>
       </div>
 
-      {/* prompt tabs */}
-      <div>
-        <div className="flex items-center">
-          <Tabs defaultValue="prompt">
-            <TabsList className="h-auto gap-4 bg-transparent p-0">
-              <TabsTrigger
-                value="prompt"
-                className="h-auto border-0 bg-transparent p-0 text-[13px] font-semibold text-foreground data-[state=inactive]:text-muted-foreground data-[state=active]:shadow-none"
-              >
-                Prompt
-              </TabsTrigger>
-              <TabsTrigger
-                value="magic"
-                className="h-auto border-0 bg-transparent p-0 text-[13px] font-semibold text-foreground data-[state=inactive]:text-muted-foreground data-[state=active]:shadow-none"
-              >
-                Magic prompt
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
-          <div className="ml-auto flex items-center gap-2 text-muted-foreground">
-            <button aria-label="Copy prompt" className="hover:text-foreground">
-              <Copy className="size-4" />
-            </button>
-            <button aria-label="Use prompt" className="hover:text-foreground">
-              <Plus className="size-4" />
-            </button>
-          </div>
-        </div>
-
-        <PromptText />
-      </div>
+      {/* prompt tabs + text */}
+      <PromptBlock />
 
       {/* additional details */}
       <Collapsible>
@@ -359,28 +401,9 @@ function DetailPanel() {
           <ChevronDown className="size-4 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
         </CollapsibleTrigger>
         <CollapsibleContent>
-          <dl className="mt-1">
-            {DETAILS.map(([k, v]) => (
-              <div
-                key={k}
-                className="flex h-8 items-center justify-between border-b border-border/60 text-[13px] last:border-0"
-              >
-                <dt className="text-muted-foreground">{k}</dt>
-                <dd className="flex items-center gap-2">
-                  {v}
-                  {k === "Model" && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="h-6 rounded-md px-2 text-[11px]"
-                    >
-                      Use model
-                    </Button>
-                  )}
-                </dd>
-              </div>
-            ))}
-          </dl>
+          <div className="mt-1">
+            <DetailRows />
+          </div>
         </CollapsibleContent>
       </Collapsible>
     </div>
@@ -401,6 +424,70 @@ function PromptText() {
         {open ? "See less" : "See more"}
       </button>
     </div>
+  );
+}
+
+/* Prompt / Magic-prompt tabs + copy/use icons + the prompt text.
+   Shared by the desktop right panel and the mobile "Image details" tab. */
+function PromptBlock() {
+  return (
+    <div>
+      <div className="flex items-center">
+        <Tabs defaultValue="prompt">
+          <TabsList className="h-auto gap-4 bg-transparent p-0">
+            <TabsTrigger
+              value="prompt"
+              className="h-auto border-0 bg-transparent p-0 text-[13px] font-semibold text-foreground data-[state=inactive]:text-muted-foreground data-[state=active]:shadow-none"
+            >
+              Prompt
+            </TabsTrigger>
+            <TabsTrigger
+              value="magic"
+              className="h-auto border-0 bg-transparent p-0 text-[13px] font-semibold text-foreground data-[state=inactive]:text-muted-foreground data-[state=active]:shadow-none"
+            >
+              Magic prompt
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
+        <div className="ml-auto flex items-center gap-2 text-muted-foreground">
+          <button aria-label="Copy prompt" className="hover:text-foreground">
+            <Copy className="size-4" />
+          </button>
+          <button aria-label="Use prompt" className="hover:text-foreground">
+            <Plus className="size-4" />
+          </button>
+        </div>
+      </div>
+      <PromptText />
+    </div>
+  );
+}
+
+/* The key/value detail rows. Shared by desktop (inside a Collapsible) and mobile. */
+function DetailRows() {
+  return (
+    <dl>
+      {DETAILS.map(([k, v]) => (
+        <div
+          key={k}
+          className="flex h-8 items-center justify-between border-b border-border/60 text-[13px] last:border-0"
+        >
+          <dt className="text-muted-foreground">{k}</dt>
+          <dd className="flex items-center gap-2">
+            {v}
+            {k === "Model" && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-6 rounded-md px-2 text-[11px]"
+              >
+                Use model
+              </Button>
+            )}
+          </dd>
+        </div>
+      ))}
+    </dl>
   );
 }
 
@@ -473,13 +560,14 @@ function RelatedGrid() {
 /* ── page ── */
 export default function ImageDetailPage() {
   const [collapsed, setCollapsed] = React.useState(false);
+  const { mode, setMode } = useTheme();
   return (
     <TooltipProvider delayDuration={200}>
       <div className="flex h-screen overflow-hidden bg-background text-foreground">
         {/* sidebar — desktop */}
         <aside className="hidden shrink-0 border-r min-[900px]:block">
           <div className="relative h-full">
-            <Sidebar collapsed={collapsed} />
+            <Sidebar collapsed={collapsed} mode={mode} onModeChange={setMode} />
             <button
               onClick={() => setCollapsed((v) => !v)}
               aria-label="Toggle sidebar"
@@ -552,28 +640,41 @@ export default function ImageDetailPage() {
                   Follow
                 </Button>
               </div>
-              {/* prompt + details */}
-              <div className="px-4 pb-28 pt-4">
-                <PromptText />
-                <p className="pb-2 pt-5 text-[14px] font-semibold">Additional details</p>
-                <dl>
-                  {DETAILS.map(([k, v]) => (
-                    <div key={k} className="flex h-8 items-center justify-between border-b border-border/60 text-[13px]">
-                      <dt className="text-muted-foreground">{k}</dt>
-                      <dd>{v}</dd>
-                    </div>
-                  ))}
-                </dl>
-                <p className="pb-3 pt-8 text-[14px] font-semibold">Similar images</p>
-                <RelatedGrid />
-              </div>
+              {/* segmented switcher: Image details ↔ Similar images.
+                  Measured 1:1 off live Ideogram mobile: left-aligned, h36, radius 30,
+                  px 14, 14px/400, active = --secondary pill / --foreground text. */}
+              <Tabs defaultValue="details" className="gap-0 px-4 pb-28 pt-4">
+                <TabsList className="flex h-auto w-fit justify-start gap-1 bg-transparent p-0">
+                  <TabsTrigger
+                    value="details"
+                    className="h-9 rounded-[30px] border-0 px-[14px] text-[14px] font-normal text-muted-foreground data-[state=active]:bg-secondary data-[state=active]:text-foreground data-[state=active]:shadow-none"
+                  >
+                    Image details
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="similar"
+                    className="h-9 rounded-[30px] border-0 px-[14px] text-[14px] font-normal text-muted-foreground data-[state=active]:bg-secondary data-[state=active]:text-foreground data-[state=active]:shadow-none"
+                  >
+                    Similar images
+                  </TabsTrigger>
+                </TabsList>
+                <TabsContent value="details" className="mt-5">
+                  <PromptBlock />
+                  <p className="pb-2 pt-5 text-[14px] font-semibold">Additional details</p>
+                  <DetailRows />
+                </TabsContent>
+                <TabsContent value="similar" className="mt-5">
+                  <RelatedGrid />
+                </TabsContent>
+              </Tabs>
             </div>
 
             {/* ═══ desktop (two-column) ═══ */}
             <div className="hidden min-[900px]:block">
               <div className="flex gap-6 px-6 pb-6">
-                {/* image column with arrows */}
-                <div className="flex flex-1 items-center px-2">
+                {/* image column with arrows — arrows hug the column edges,
+                    image centered between them (gap grows on wide screens, per spec). */}
+                <div className="flex min-w-0 flex-1 items-center gap-2 px-2">
                   <Button
                     variant="ghost"
                     size="icon"
@@ -582,8 +683,11 @@ export default function ImageDetailPage() {
                   >
                     <ChevronLeft className="size-5" />
                   </Button>
-                  <div className="mx-auto flex flex-col items-center gap-4">
-                    <div className="aspect-[3/4] h-[calc(100vh-180px)] max-h-[860px] w-auto rounded-xl bg-muted" />
+                  <div className="flex min-w-0 flex-1 flex-col items-center gap-4">
+                    {/* width fills the column but is capped so height never exceeds
+                        min(100vh-180, 860); this prevents overflow at 1024 and keeps
+                        the 1440/1920 sizes identical to before. */}
+                    <div className="aspect-[3/4] w-full max-w-[calc(min(100vh-180px,860px)*3/4)] rounded-xl bg-muted" />
                     <ThumbStrip size={44} />
                   </div>
                   <Button
@@ -614,7 +718,7 @@ export default function ImageDetailPage() {
               Open in… <ChevronDown className="size-4" />
             </Button>
             <div className="pointer-events-auto ml-auto flex items-center gap-1.5">
-              {[Download, Heart, FolderPlus, MoreHorizontal].map((Icon, i) => (
+              {[Heart, Download, FolderPlus, MoreHorizontal].map((Icon, i) => (
                 <Button
                   key={i}
                   variant="ghost"
