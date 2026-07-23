@@ -8,7 +8,20 @@
 Curated AI wall-art shop with an AI advisor. Solo founder (Artur), non-developer — communicate in **Polish**; code/UI/commits in **English**; UI/prices English/USD/global.
 
 ## Where we are now
-**Pilot SUCCEEDED + polished to 1:1.** The Ideogram single-image-detail screen is rebuilt **1:1 on shadcn** at `src/app/pilot/image-detail/page.tsx`. Verified in Playwright against the real Ideogram across 390/430/768/1024/1440/1920 + dark theme: faithful, zero horizontal overflow, clean console, `pnpm build` static-prerenders it. Polish landed in commit `47ca6ea` (dark theme via account menu, 1024 overflow fix, sidebar label truncation, mobile "Image details | Similar images" switcher measured 1:1 off live Ideogram).
+**Pilot: static layout is 1:1; interaction states are NOT yet.** The Ideogram single-image-detail screen is rebuilt on shadcn at `src/app/pilot/image-detail/page.tsx`, verified against the real Ideogram across 390/430/768/1024/1440/1920 + dark theme (faithful, zero overflow, clean console, static-prerenders). Polish landed in `47ca6ea`.
+
+**BUT** a 2026-07-23 live-capture pass (Playwright driving the real Ideogram) found the **interactive** states were missed — the first pass only matched static frames. Full findings with exact measured values are in **`docs/ideogram/image-detail.md` §6 "Interaction inventory"**. This is now the **immediate next work** (before design-system extraction). The 9 gaps Artur flagged, all verified:
+1. Sidebar bottom = **2 buttons** (account + bell), not one combined.
+2. Right panel = **full-height card** (320×780, radius 30, bg `--card`, actions pinned bottom via `mt-auto`) — ours is a short block that only grows when prompt expands.
+3. `•••` menu needs **icons on every item + submenus** (Add to collection ▸, Report ▸) — ours is text-only.
+4. Account menu (bottom) is **rich** (profile+email, Free/credits, Upgrade plan, View profile, Help, Manage muted, Delete account, API, Log out) with a **segmented Light/Dark/Auto at the foot** — that's where theme lives, not standalone checkmark items. **Use a placeholder email, never commit Artur's real one.**
+5. Tools **"More" = inline expander** (adds Styles/Characters/Canvas/Batch, flips to "Less"), not a popup.
+6. **Collections** nav: hover → `›` expander → sub-collections.
+7. Sidebar **collapse** toggle by the logo; hover on the collapsed/logo area swaps the mark.
+8. **"Personal"** (top) = workspace-switcher dropdown.
+9. Prompt-row **Copy prompt / Use prompt (+)** actions (wire later).
+
+Artur's call on sequencing was pending when we stopped for the day (options offered: all-at-once 1:1 vs structural-first vs prioritize). **Recommended next: do the interaction pass, verifying each state against the live app (open the real menu, measure, rebuild, re-check) — same pipeline as the static pass.** Live Ideogram is reachable via Playwright MCP (image-detail is a modal over `/explore`; its URL pattern is `ideogram.ai/g/<id>/<n>`; the sidebar is the shared app shell, so sidebar menus can be captured on `/explore` too). **Claude Chrome is NOT needed** — Playwright reaches the logged-in app and reads exact pixels/DOM.
 
 Run it: `pnpm dev` → http://localhost:3000/pilot/image-detail (narrow the window to see the 900px mobile/desktop switch).
 
@@ -20,8 +33,10 @@ Run it: `pnpm dev` → http://localhost:3000/pilot/image-detail (narrow the wind
 5. **Recolor + remap — LATER, separate steps.**
 
 ## Immediate plan (Artur's chosen order: 1 → 3 → 2)
-1. **[DONE] Polish the pilot screen to 100%** — all 6 breakpoints + dark theme done and verified (commit `47ca6ea`). Only remaining nit if we want it: top thumbnail-strip alignment on mobile (spec says centered; live Ideogram looks slightly left) — left as-is pending Artur's eyeball on a real phone.
-2. **[NEXT] Extract shared blocks into our design system** — pull sidebar, search pill, detail panel, action-grid, thumbnail strip, icon-circle, etc. out of the pilot page into reusable components before duplicates appear. (Started: `PromptBlock` + `DetailRows` already extracted and shared desktop↔mobile.)
+1. **Polish the pilot screen to 100%.**
+   - **[DONE] static layout** — all 6 breakpoints + dark theme verified (`47ca6ea`). Nit: top thumbnail-strip alignment on mobile (spec says centered; live looks slightly left) — pending Artur's eyeball on a real phone.
+   - **[← RESUME HERE] interaction 1:1 pass** — implement the 9 interaction gaps in `docs/ideogram/image-detail.md` §6 (see the "Where we are now" list above). Verify each state against the live app. Use a placeholder email. This is the active task; Artur will pick sequencing (all-at-once vs structural-first) next session.
+2. **[AFTER] Extract shared blocks into our design system** — pull sidebar, search pill, detail panel, action-grid, thumbnail strip, icon-circle, etc. into reusable components. (Started: `PromptBlock` + `DetailRows` already extracted and shared desktop↔mobile.)
 3. **Then the next screens** (Home / My images / generator …) built fast from those blocks.
 
 Only after the shadcn system + screens exist do we **recolor** (warm/gallery) and **remap to our business logic** (wall composition / slot pick / advisor chat / cart-checkout — the product thinking lives in the read-only `18. Latenca` repo + its decisions D1–D11).
