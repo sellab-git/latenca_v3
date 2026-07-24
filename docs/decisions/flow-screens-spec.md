@@ -148,6 +148,8 @@ See **`prior-art-reuse.md`** (full port map from 5 prior projects). Headlines: *
 
 Each phase: `dev-plan` → build on `_shell` → verify in browser (Playwright/`pnpm build`) → auto-push.
 
+**Build approach (decided 2026-07-24 — Artur): BUILD-DIRECT on `_shell`, reusing exactly the Ideogram-derived components we already built** (no separate mockup pass). Concretely: `image-detail` → PDP overlay · `FeedCard` → ProductCard · Home feed → catalogue · AppSidebar/MobileNav/Composer/SegmentedControl/ImageActionsMenu/theme reused as-is. New commerce compositions (buy-box pickers, cart, checkout, wall-builder) are authored FROM `_shell` blocks + tokens (RULE #1: grep `_shell` before authoring). **Verify responsive (desktop 1440 / tablet 768 / mobile 390) via Playwright per screen** as it's built — you see a working screen, not a mockup. Recolor stays last.
+
 ---
 
 ## Related
