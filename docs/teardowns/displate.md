@@ -35,5 +35,23 @@ The reference Latenca needs (Ideogram has none of this):
 - **Mixtiles:** wall-building + emotional onboarding + in-room preview + slot-fill — but **fragmented silos**, single-source.
 - **Latenca = Displate's unified shop spine + Mixtiles's wall canvas + our AI advisor as the guide**, with slot-fill accepting any source (curated/AI/photo). → `docs/decisions/unified-flow-architecture.md`.
 
-## Still to map
-Displate cart/checkout + identity/payment method; Custom Displates (their upload path); then **iamfy.co** + best-2026 research → synthesize.
+## PDP — DEEP verified live (2026-07-24, interacted: changed size/material, added to cart)
+The single-piece PDP is **Latenca's priority reference** (most buyers get ONE piece — see memory `single-piece-is-primary-path`). Verified behavior on `/displate/7941958`:
+- **Pickers = radix radio groups:** **Material** (Matte / Gloss / Textra) · **Size** (M 45×32 / L 67.5×48 / XL) · **Add frame** (None / Natural / Graphite / White / Black). Frame = optional add-on *(couldn't confirm exact price delta — swatch has a hover-anim overlay that blocked the click; not asserting a number)*.
+- **Size drives price LIVE:** M = **$39.99** → selecting L = **$87.99** (base $49.99 → $109.99); volume tiers recompute with it.
+- **Availability gating per artwork:** **XL was `disabled`** for this piece (`data-disabled`, aria-checked false) → sizes are gated by what's available for that art. Maps directly to our "availability per variant×destination" rule.
+- **Volume-discount tiers** (quantity, not composition): 1 = −20%, 2 = −25%, 3+ = −30%, code GEEK, countdown timer. **This is Displate's entire multi-piece play — buy MORE of anything for a bigger discount; there is NO curated composition / gallery-wall builder.**
+- Social proof **4.7/5 · 18,256 reviews**; attribution ("Officially licensed · 99 Artworks"); **"Drag to move"** 3D tilt; in-room/context thumbnails; **geo delivery** ("5–6 business days to Thailand"); breadcrumb taxonomy.
+
+## Cart → checkout → identity — verified
+- **Add to cart** → modal ("Proceed to cart / Continue shopping") → **/cart**.
+- Cart: line item with in-cart **Edit** (change size/material), **"Frequently Bought Together"** cross-sell, volume-discount reminder, **transparent shipping ($24.99) + "customs fee may apply"**, **Displate Club** upsell ($9.99/mo → free shipping), CHECKOUT.
+- Checkout = **own custom checkout (not Shopify), guest-first** (`forcedLogin=false`): email + shipping address, express **PayPal / Google Pay**, SSL + 100-day returns. → confirms **guest-first + own checkout** (matches `auth-onboarding.md`; same stance as iamfy).
+
+## What this sharpens for Latenca
+- **The single-piece PDP is the mature pattern to match** for our priority path: material/size(/frame) segmented pickers, **live price on size**, availability-gated variants, social proof, volume tiers, geo delivery, add-to-cart — all guest. Our pickers map to Gelato variants; keep the picker UX, drop metal-only specifics.
+- **Even Displate — a 2M-item mature marketplace — has NO composition.** Its multi-buy driver is a **quantity discount**, not a curated wall. Reinforces: single-piece is the unit; nobody does curated layouts → our differentiator, but the single-piece path must be excellent first.
+- Cross-sell ("Frequently Bought Together") + quantity discount are the conversion levers on the single-piece path — cheaper than a composer, and where most volume is.
+
+## Still to map (lower value)
+Custom Displates (their upload-your-own path — future for us) · the browse taste-picker interstitial (noted above) · mobile · empty/error states.
