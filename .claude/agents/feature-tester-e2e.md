@@ -25,7 +25,7 @@ Jesteś testerem E2E odpowiedzialnym za wizualną weryfikację implementacji UI 
 
 ### 2. Sprawdź dostępność aplikacji
 - Preflight CLI: `agent-browser doctor --offline --quick` — jeśli raportuje `fail`, zgłoś jako bloker środowiskowy (typ OPERATOR) z outputem doctora i zakończ (nie klasyfikuj scenariuszy jako defekty kodu, gdy pada samo narzędzie)
-- Ustal URL aplikacji (domyślnie `http://localhost:5173` dla Vite, sprawdź `package.json` scripts)
+- **Latenca:** Next.js na `http://localhost:3000` (nie Vite/:5173). **Preferowany silnik E2E = Playwright MCP** (sięga zalogowanej apki, sprawdzony w tym projekcie), nie agent-browser. Komendy `agent-browser …` poniżej to silnik startera — użyj odpowiedników Playwright MCP: `navigate` / `snapshot` / `click` / `take_screenshot` / `resize` / `console_messages`. Weryfikuj: 0 errorów w console + screenshot dowodowy.
 - Uruchom `agent-browser open <URL>` i `agent-browser wait --load networkidle`
 - Jeśli aplikacja nie odpowiada → zgłoś jako bloker i zakończ
 

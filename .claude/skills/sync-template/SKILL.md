@@ -6,6 +6,10 @@ argument-hint: "[opcjonalnie: --dry-run (tylko podgląd), --force (aplikuj mimo 
 
 # sync-template — aktualizacja maszynerii workflow z szablonu
 
+> **⛔ WYŁĄCZONE DLA LATENCA (fork).** Ten projekt to **fork** szablonu, zaadaptowany pod nasz stack (Next 16/Vercel/Supabase-SSR/Stripe/POD — patrz `docs/claude-foundation-plan.md`). `sync-template` nadpisuje `.claude/` wersją z upstreamu i **skasowałby nasze adaptacje** (`latenca-overrides.md`, `next-guidelines`, `payments`, `pod-fulfillment`, resource SSR, patche agentów). **Nie uruchamiaj tego skilla tutaj.**
+>
+> **Cherry-pick zamiast sync:** gdy w upstreamie (`AIBiz-Automatyzacje/claude-code-starter`) pojawi się ulepszenie, które chcemy — sklonuj starter do scratchpada, obejrzyj konkretny plik, i **ręcznie** przenieś zmianę do naszej wersji, zachowując latenca-overrides i adaptacje Next. Nigdy hurtowy overwrite.
+
 Zaciąga najnowszą wersję folderu `.claude/` z centralnego repo szablonu
 **`AIBiz-Automatyzacje/claude-code-starter`** (branch `main`) do bieżącego projektu.
 Powstał, żeby po wrzuceniu szablonu do innego projektu nie trzeba było ręcznie

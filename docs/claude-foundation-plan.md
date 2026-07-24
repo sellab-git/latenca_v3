@@ -72,5 +72,12 @@ Every UI/skill/agent that assumes Vite must be translated:
 - [ ] Decide: fork cleanly (no auto-sync). Document how to cherry-pick upstream starter improvements manually.
 - [ ] Remove/neuter `sync-template` blind overwrite for this repo.
 
-## Status
-Base vendored. Workstreams A–F pending — tracked as tasks. Executed in order (A→B first: they unblock the rest), committed per workstream on this branch, then merged to `main`.
+## Status — Phase-adaptation DONE (branch `chore/claude-foundation`)
+- **A ✅** `latenca-overrides.md` (precedence + stack facts + testing boundary) + CLAUDE.md wiring.
+- **B ✅** `CONCEPTS.md`, `learned-patterns.md` (6 rules), `docs/solutions/` seed, PROJECT_STATUS bridge.
+- **C ✅** `next-guidelines`, `payments`, `pod-fulfillment` (new), Supabase Next-SSR resource + pointer; security/sentry governed by overrides; grounded in live 2026 docs (caught: Next 16 `middleware`→`proxy`, `auth-helpers-nextjs` deprecated).
+- **D ✅** builders (`feature-builder-{ui,data,fullstack}`) now auto-load `next-guidelines`; `feature-tester-e2e` retargeted to Next `:3000` + Playwright MCP. Reviewers read code + overrides.
+- **E ✅** `coolify-manager` removed (we're Vercel → global `/deploy` + `[deploy]` discipline). **Decision: Stop-hooks + statusLine NOT auto-activated** (opt-in) to avoid disrupting sessions; the starter's hook scripts remain in `.claude/hooks/` but are unwired — enable later with a Next-appropriate fast check (`tsc --noEmit && eslint`, not full `next build`). `settings.json.starter-ref` removed.
+- **F ✅** This is a **fork**. `sync-template` guarded OFF (would clobber our adaptations) — see its SKILL.md. Upstream improvements come via manual cherry-pick from a scratchpad clone, never blind overwrite.
+
+**Next:** merge `chore/claude-foundation` → `main`, then the foundation guides Phase B (teardowns + commerce spine). Research task #13 (auth model) still open.

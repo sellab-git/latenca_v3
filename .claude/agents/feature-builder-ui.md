@@ -1,7 +1,7 @@
 ---
 name: feature-builder-ui
 description: "Implementuje warstwę UI (komponenty React 19, Tailwind v4, shadcn/ui, formy, dostępność). Wywoływany przez dev-docs-execute gdy Implementation Unit dotyka tylko warstwy prezentacji (*.tsx w src/components, src/features, src/pages, *.css)."
-skills: [tailwind-react-guidelines, ux-ui-guidelines, figma:figma-use, figma-design-to-code]
+skills: [next-guidelines, tailwind-react-guidelines, ux-ui-guidelines, figma:figma-use, figma-design-to-code]
 model: inherit
 ---
 
