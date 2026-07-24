@@ -30,5 +30,5 @@ Next.js 16 · React 19 · Tailwind v4 · shadcn/ui (style `radix-nova`, Lucide i
 
 ## Conventions
 - Verify in the browser (Playwright / `pnpm build`) before claiming done.
-- Commit freely; **ask before `git push`**. No `[deploy]` tag unless Artur explicitly says deploy.
+- Commit freely and **auto-push** (Artur's standing hands-off rule for `latenca_v3` — don't ask). No `[deploy]` tag unless Artur explicitly says deploy.
 - `private/` (costs/keys) is never committed.
