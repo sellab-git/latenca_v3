@@ -64,6 +64,19 @@
 
 ---
 
+## AI — architecture & evolution (validated 2026-07-24)
+**Almost all AI in Latenca enters through TWO chokepoints + one shared gateway** — keep those clean and AI's evolution is additive, not a rewrite.
+- **Chokepoint 1 — Advisor provider seam** (`BriefParserPort` / advisor provider): everything conversational/discovery. **Thin → full is a dial-up, not a rewrite:** today the LLM only parses the brief and a **deterministic ranker** does the work; going "100% API" (Claude etc.) = the LLM becomes a **tool-calling agent over the SAME deterministic functions (`rank`/`fill_wall`), which become its tools.** The thin-AI investment is the tool layer full-LLM sits on — nothing wasted. Even "full LLM" for a shop stays **grounded via tool-calling** (never invents products/prices — tools/POD/DB are the source of truth; 2026 best practice). What changes = cost/latency/ops (managed by credits/limits/streaming), not the foundation.
+- **Chokepoint 2 — `ingest` pipeline**: everything about creating/understanding art — **generation** (templated → full engine, via `ArtworkSource`/D-020), **auto-tagging** (style/mood/room/color via vision model — essential for a millions-artwork catalogue), **embeddings** (CLIP → pgvector/Typesense for semantic + "more like this", `similarTo` reserved in `SearchProvider`), **moderation/IP-safety**, **upscaling** (AI-print quality gate). A generated image is just another asset flowing through `ingest` + `AssetStore` (R2) — async queue, not the hot path. Adding writes/assets/cost goes through scale-designed pipelines, not the millions-of-reads path.
+
+**Two cheap AI seams to NAME in Phase 1 (not build):**
+1. **`ModelProvider` / AI-gateway** — route ALL model calls (chat, vision-tagging, generation, embeddings, copy) through ONE managed door (Vercel AI Gateway: swappable `"provider/model"`, fallbacks, rate limits, cost tracking). Mirrors `PaymentProvider`/`PodProvider`/`AssetStore`. Without it, each future AI use scatters keys + cost across the codebase.
+2. **`ai_usage` / `generation_logs` table** — per-operation/per-order AI cost visibility (Artur's cross-project convention). Cheap now, essential at scale.
+
+**Maturity ladder & readiness:** MVP = thin advisor (✅ seam) · Near = auto-tag + embeddings + semantic search + full tool-calling advisor (✅ ingest stages + SearchProvider + advisor seam) · Later = generation (templated→engine) + personalized generation (✅ ArtworkSource + ingest) · Frontier = multimodal advisor (photo-as-analytical-input, NOT AR) ⚠️ needs a vision-input seam parallel to brief-parse · **agentic commerce** (external AI agents discover us, checkout stays ours) ⚠️ needs a structured product feed later (data model is the substrate) · ML-ranking ⚠️ **needs behavior-event logging started when we want it** (can't backfill history) — decide when.
+
+**Verdict:** AI concentrates into advisor + `ingest` + a model-gateway → evolution = flip a seam + add a pipeline stage + manage cost, never a rewrite. Naming the two seams above makes it airtight.
+
 ## Explicitly DEFERRED (do NOT build in Phase 1 — additive later, seams already in place)
 `use cache: remote` / Runtime Cache · `generateStaticParams` prerender lists · per-user `<Suspense>` price/cart splits · Read Replicas provisioning · Typesense cluster · pgvector/semantic search · R2 + Cloudflare Images deployment · async ingest queue + workers · Vercel Queues drain · Adaptive Pricing / multi-currency settlement · Multigres. **Each slots in on top of a Phase-1 seam — none require touching business logic.**
 

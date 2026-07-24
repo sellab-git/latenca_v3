@@ -47,7 +47,9 @@ Pełne uzasadnienie + źródła: **`docs/decisions/scale-and-future-proofing.md`
 - **Unit 8 (koszyk):** **stateless client-side** (localStorage `{pod_product_uid, qty}`, **nigdy ceny**); serwer re-waliduje cenę+wysyłkę quote'em Gelato przy checkoutcie; **BEZ tabeli `guest_carts`**; order = `email` + nullable `user_id`.
 - **Unit 11 (assety):** interfejsy **`AssetStore`** (S3-shaped; Phase-1 `SupabaseAssetStore`) + **`ImageDelivery.derivativeUrl()`** (jeden choke-point na web-obrazy; Phase-1 custom Next `loader`; **NIE domyślny `<Image>` optimizer Vercela**) + **`ingest()` w kształcie enqueue** (inline teraz; content-addressed sha256; dead-letter state). Cel skali: **R2 + Cloudflare Images**; Supabase Storage tylko user-private.
 
-**Zdecydowane cele skali (nie re-litygować):** search=Typesense · storage/CDN=Cloudflare R2 + Images · queue=Vercel Cron→worker (potem Vercel Queues) · semantic=pgvector/Typesense · multi-currency=Stripe Adaptive Pricing. **Nic z tego NIE budujemy w Fazie 1** — tylko szwy, żeby było dokładalne.
+**Szwy AI (nazwać w Fazie 1, nie budować — `scale-and-future-proofing.md` §AI):** AI wchodzi przez 2 chokepointy (szew doradcy + `ingest`) + wspólną **bramkę modeli**. Dołożyć: **Unit 1 — `ModelProvider`/AI-gateway seam** (wszystkie wywołania AI przez jedne drzwi: wymienni dostawcy, limity, koszt; Vercel AI Gateway) · **Unit 2 — tabela `ai_usage`/`generation_logs`** (widoczność kosztu AI per operacja/order). Chude→pełne AI = dial-up za szwem (deterministyczne funkcje stają się narzędziami LLM), nie rewrite.
+
+**Zdecydowane cele skali (nie re-litygować):** search=Typesense · storage/CDN=Cloudflare R2 + Images · queue=Vercel Cron→worker (potem Vercel Queues) · semantic=pgvector/Typesense · multi-currency=Stripe Adaptive Pricing · AI=bramka modeli (Vercel AI Gateway) + doradca chudy→tool-calling. **Nic z tego NIE budujemy w Fazie 1** — tylko szwy, żeby było dokładalne.
 
 ## Kontekst i research
 
