@@ -4,6 +4,12 @@
 
 **Status:** complete (full 18 review done 2026-07-24). One-liner: *the strategy transfers wholesale; the display/AI-ambition layer has an internal fault line that Artur's 2026-07-24 clarifications resolve in favor of the later locks.*
 
+## ⛔ GOVERNING RULE — how to treat folder 18 (Artur, 2026-07-24)
+**18 is an IDEA / input, NOT a 1:1 copy target.** Artur is not confident in 18's actual *output* — its **flow, screen-to-screen switching, design decisions, UX/UI**. So:
+- **Transfers as SPEC (durable, proven):** strategy + decisions (D-0XX) · data model · pricing formula · commerce logic (audit D1–D11) · KB approach. These are load-bearing and re-usable.
+- **Treated as IDEAS ONLY (re-think fresh):** the flow, the screens, screen-switching, UX/UI, the mockups (`05-wall`/`04-advisor`). **Harvest for ideas, never replicate 1:1.**
+- **The whole flow + screens + UX must be re-thought from scratch under:** (a) our *current* flow decisions, (b) the **new Ideogram-derived shadcn design system** (`src/app/pilot/_shell/`) — 18's lavender-on-cream HTML mockups are a different system, (c) everything we've since decided. Where this doc says "bring mockup patterns," it means *as input to a fresh design*, not as files to port.
+
 > **Doc-numbering note:** `DECISIONS.md` runs **D-001…D-051** (no D-047 — reserved for the still-open "single artwork vs N-piece wall" question). A **separate** track **D1–D11** lives in `docs/audit-wall.md` (commerce: shipping/tax/cart/catalog-engine). Folder-20 `CLAUDE.md`'s "decisions D1–D11" refers to that commerce track; the big registry is D-0XX. (CLAUDE.md wording to fix.)
 
 ## Artur's clarifications (2026-07-24) — reconciled vs 18
@@ -27,7 +33,7 @@
 - **Pricing:** gross-up `net=(Gelato_cost+fixed)÷(1−margin%−artist%−commission%)`; Gelato = source of truth (per-SKU at build); **each extra piece ships ~€0.29 → sets are the entire economics**; USA ≈ 2× EU margin; artist cap ~40%, margin floor.
 - **Commerce architecture (audit D1–D11) = MVP backend work-order:** one shared **Catalog Engine** (⚠️ Home's filters are a verified MOCK — must be built) · live Gelato shipping quote (no flat rate) · Stripe Tax (tax-exclusive) · availability per variant×destination · deterministic pick ranking (not LLM) · zero-results always has an exit · max 12 pieces · itemized cart no cross-sell · context-scoped chat-chip registry (wall/piece/pick).
 - **KB (advisor day-1 quality condition):** build layers **A rules / B heuristics / D patterns** now; **E case-studies / F effectiveness** need volume; **log every session's cost + decisions from turn 1** (can't reconstruct later).
-- **Mockup patterns → rebuild as shadcn (not copied HTML):** `05-wall` (v35, design-complete: product-page-IS-the-wall, N=1–12 cm-true preset layouts, slot dictates position+shape, no drag — D-050/D-051, 27 layouts) · `04-advisor` (one persistent panel — D-046) · 3-screen MVP (catalogue-landing / product+advisor / cart — D-038) · no-breadcrumbs (D-048) · warm shadow system (D-043) · single-sourced shell/CSS discipline (D-040/D-041) · component-reuse RULE #1 (`components.md`). Palette is lavender-on-cream — **recolor is folder-20's last step anyway**, so copy structure, retune later.
+- **Mockup patterns = IDEAS to re-think fresh (per the governing rule), NOT files to port:** `05-wall` (product-page-IS-the-wall, N=1–12 cm-true preset layouts, slot dictates position+shape, no drag — D-050/D-051) and `04-advisor` (one persistent panel — D-046) are *concept references* for the wall + advisor surfaces. Also as ideas: 3-screen MVP (catalogue / product+advisor / cart — D-038), no-breadcrumbs (D-048), context chips (D11). **Re-design all of this fresh on our Ideogram/shadcn `_shell`** under current flow decisions — 18's flow/screen-switching/UX is uncertain and lavender-on-cream, not a target. Keep RULE #1 (reuse `_shell`, grep before authoring).
 
 ## ALREADY SUPERSEDED — do NOT carry forward
 - `PRODUCT-BLUEPRINT-single-session.md` as written (photo-composite-onto-room spine — dead per D-021/D-031/D-033 + clarification b). Keep only its interaction philosophy (opinion-first, react-only, price-once-at-end, sets-as-implementation).
