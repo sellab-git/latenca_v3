@@ -124,6 +124,8 @@ Pogrupowane w pod-fazy: **A. Fundament & dane** · **B. POD & pricing** · **C. 
 - Stwórz: `src/lib/supabase/server.ts`, `src/lib/supabase/client.ts`, `src/lib/supabase/admin.ts` (`import "server-only"`, publishable vs secret — wzór Pawtraits `lib/supabase.ts`)
 - Stwórz: `proxy.ts` (session refresh + OWASP headers; cron/webhook secret bypass PRZED auth; NIE `middleware.ts`)
 - Stwórz: `vitest.config.ts`, `src/lib/api-response.ts`, `src/lib/validation.ts`, `src/lib/rate-limit.ts` (port Pawtraits/Motowalls)
+- **Obserwowalność od dnia 1 (item 5):** Sentry (`@sentry/nextjs` — skill `sentry-integration`) · analytics konwersji za cienkim seamem `src/lib/analytics.ts` (Vercel Analytics lub PostHog — wymienne) · **`ModelProvider`/AI-gateway seam** `src/lib/ai/provider.ts` (pusty interfejs teraz — wszystkie przyszłe wywołania AI przez jedne drzwi; tabela `ai_usage` w Unit 2)
+- **CI (lekki):** `.github/workflows/ci.yml` — na push: typecheck + test + lint
 - Test (unit): `src/lib/validation.test.ts`
 **Delegate to:** feature-builder-data
 **Skills in play:** supabase-dev-guidelines, security, sentry-integration, next-guidelines
