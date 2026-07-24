@@ -26,19 +26,25 @@ Persistent top-nav: **Shop · Style · Room · Trends · Gallery Walls · Frames
 ## Advisor flow — DRILLED live (2026-07-24, typed a real brief + added a pick)
 Drove `/a/advisor/discover/...`: greeting *"Tell me where you're hanging, and I'll start composing in the wall canvas. The wall fills in as we talk."* Typed brief *"Calm bedroom, warm neutrals, above the bed — I like abstract shapes"* → submit spawns a fresh advisor session.
 
-**What the AI actually returned:**
-- **Extracted context chip** `ROOM: Bedroom`; **named the curation** "Soft Neutral Abstractions".
-- Conversational line + **ADVISOR'S PICK** (one hero: *Neutral Shapes Abstract No 5* + rationale *"Clean minimalist lines anchor the gallery with a serene aesthetic"*) then **~12 ranked pieces**, MANY with a **one-line per-piece rationale** (why it fits).
-- **Refine quick-chips** incl. a **negative**: "More by Cartissi", "Organic Shapes Focus", "Minimalist Geometry", "Not quite neutral enough".
-- **`+ Add` → SHORTLIST 0→1; the WALL stayed empty** ("A wall, waiting"). Also offers **AR room-photo upload**.
+> **⚠️ CORRECTION (deeper 2nd pass, screenshots): an earlier version of this section claimed "the wall never composes" — that was WRONG, from a shallow 1-click glance. The wall DOES compose visually.** The error: I only clicked the ❤ (shortlist); the wall-add is a *different* action. Corrected findings below.
 
-**★ THE weakness (verified, not assumed):** despite the "wall composes as we talk" promise, **the wall never composes** — the advisor delivers an **annotated recommendation list + a shortlist**, not a taking-shape wall. It reads like search-results-with-commentary. Fragmented saving model too (Shortlist vs Curations vs For You/REC = 3 overlapping buckets).
+**Two distinct add-actions (the thing the glance missed):**
+- **❤ "Save to shortlist"** (the heart on each card) → saves to SHORTLIST (for later).
+- **Click the artwork itself → "ON WALL"** → adds it to the **composed wall** ("Your wall, N pieces, £X").
 
-**TAKE (~20%):** per-piece rationale ("why this piece" = advisor-as-designer) · Advisor's-Pick hero hierarchy (not a flat list) · visible extracted context chips from NL · refine quick-chips incl. a negative · named curation. Every turn ends in a concrete addable output.
+**The wall DOES compose — verified with screenshots (3 + 6 pieces):**
+- Pieces render **framed on a flat neutral wall at real relative sizes** (a 60×80 is visibly bigger than a 28×28). Toolbar: **Measure**, **Grid**, and a **Flat ↔ "See it on your wall" (AR)** toggle (default = Flat).
+- **Arrangement modes:** default = a **single horizontal row** (overflows → scroll); **Grid** = a tidy **multi-row grid** (2×3 for 6). **BUT still only uniform row/grid — NOT a curated asymmetric designed gallery wall.** *(Whether Gallery-Walls lens / Curations offer designed compositions = still to check — do NOT conclude yet.)*
+- **Per-piece QUICK EDIT** (click a wall piece): **STYLE** variants (crops — "The Bold" / "The Pure") · **SIZE** grid, **orientation-appropriate** (square artwork → 12×12…40×40 square only — confirms orientation-driven sizing) · **"Swap position — tap another slot"** (reorder by tap-swap, **no free drag**) · **View details** (→ PDP) · **Remove from wall**. Each piece has own frame + size + price.
+- **Live total + Add to cart**; "Your wall · £X" drawer lists every piece (title / frame / size / price).
 
-**REJECT (~80%):** the wall-never-composes gap · AR room-photo preview (already out — D-021/D-033) · 3-bucket saving model · long scrolly 12-piece list (choice overload, opposite of "sell confidence").
+**Conversational refinement (verified — real, iterative):** refine quick-chips **regenerate every turn**, **keep running context** (calm/warm/neutral/bedroom) while applying the new lens, and always include a **negative escape** ("Not quite right"). Past turns **collapse** showing "· N loved". Extracted **ROOM chip** + **named curation** ("Soft Neutral Abstractions"). Per-piece rationale + Advisor's-Pick hero each turn.
 
-**★ Latenca's edge, sharpened:** the advisor's picks must **LAND in the curated wall layout — the wall visibly composes** (hero slot first, supporting next), each placed piece carries its "why", refine by **swapping within the taking-shape wall**. We deliver the composition Fy! only promises. Advisor = one persistent panel (D-046), output = **a wall taking shape, not a list**; deterministic ranking, grounded in real product data. Feeds GAP #3 (advisor proposal surface) in `reconciliation-with-18.md`.
+**TAKE (good, current patterns):** two-action model (save-for-later vs put-on-wall) · **framed wall at real sizes + Measure + Flat default** · **per-piece quick-edit** (style / size-by-orientation / **swap-by-tap** / remove) — excellent reference for our per-slot editor, and **tap-swap reorder fits our no-drag rule** · contextual conversational refinement with regenerating chips + negative escape · per-piece rationale · Advisor's-Pick hero · room chip · named curation.
+
+**REJECT / OUR EDGE:** their arrangements are **row / grid (uniform) only — no curated balanced designed layouts** → our edge = **curated layouts per N** (the designed composition they lack; row+grid we also cover as our "Free/grid" state). AR "see it on your wall" — out (D-021/D-033); their "Flat" default aligns with us. Saving model is fragmented (Shortlist vs Curations vs For You). Feeds GAP #3 (advisor proposal surface) in `reconciliation-with-18.md`.
+
+**Still to verify (this teardown, areas B–G):** Style Quiz on-ramp · "Try a brief" · room upload/AR flow · what creates a **Curation** (stayed 0) · **Gallery Walls lens** (do they sell pre-designed curated walls?) · artwork **PDP** (pickers) · **cart → checkout → identity/payment** · mobile · empty/error states.
 
 ## Still to map
 Fy! PDP (pickers/frames), cart/checkout + identity/payment method.
