@@ -48,3 +48,8 @@ next-env.d.ts
 # competitor captures + local verification shots — never commit
 /ideogram-*.png
 /*.png
+
+# competitor teardown screenshots — never commit
+/*.jpeg
+/*.jpg
+iamfy-*.jpeg
