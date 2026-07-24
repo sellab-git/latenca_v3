@@ -27,6 +27,7 @@ Folder 20 ma dziś tylko design base (`_shell` + 4 ekrany pilota) i shadcn — z
 - R7. **Fulfillment na paid-webhooku** (idempotentny, race-safe) → utworzenie zamówienia Gelato + capture realnych kosztów; Gelato webhook (status/tracking). (prior-art)
 - R8. **Model danych day-1**: source-agnostic ARTWORK, globalna tabela VARIANT (UID trzymany nie konstruowany), orders/order_items (snapshoty, dual status), order_costs, webhook_events. (spec §4)
 - R9. **Content seed + bramka jakości** (rozdzielczość ≥ potrzebnej dla największego rozmiaru + opcjonalny upscaler seam), seed CC0. (spec §8, A1)
+- R10. **★ Super szybki, nowoczesny katalog — poziom Ideograma (wymóg 1. klasy).** Katalog/PDP mają ładować się błyskawicznie i płynnie jak Ideogram, wyraźnie szybciej i nowocześniej niż Mixtiles/Displate/iamfy. Mierzone, nie deklarowane. (patrz §Wydajność)
 
 ## Granice scope'u
 - **⛔ `src/app/pilot/**` jest ZAMROŻONE** — makiety referencyjne z Ideograma. NIE edytować, NIE nadpisywać. Produkcyjny shell = **kopia** do `src/components/shell/` (nowe pliki); ekrany sklepu = **nowa grupa `src/app/(shop)/`**. Wszystko nowe = nowe pliki (Artur, 2026-07-24).
@@ -50,6 +51,18 @@ Pełne uzasadnienie + źródła: **`docs/decisions/scale-and-future-proofing.md`
 **Szwy AI (nazwać w Fazie 1, nie budować — `scale-and-future-proofing.md` §AI):** AI wchodzi przez 2 chokepointy (szew doradcy + `ingest`) + wspólną **bramkę modeli**. Dołożyć: **Unit 1 — `ModelProvider`/AI-gateway seam** (wszystkie wywołania AI przez jedne drzwi: wymienni dostawcy, limity, koszt; Vercel AI Gateway) · **Unit 2 — tabela `ai_usage`/`generation_logs`** (widoczność kosztu AI per operacja/order). Chude→pełne AI = dial-up za szwem (deterministyczne funkcje stają się narzędziami LLM), nie rewrite.
 
 **Zdecydowane cele skali (nie re-litygować):** search=Typesense · storage/CDN=Cloudflare R2 + Images · queue=Vercel Cron→worker (potem Vercel Queues) · semantic=pgvector/Typesense · multi-currency=Stripe Adaptive Pricing · AI=bramka modeli (Vercel AI Gateway) + doradca chudy→tool-calling. **Nic z tego NIE budujemy w Fazie 1** — tylko szwy, żeby było dokładalne.
+
+## ★ Wydajność & nowoczesny feel — wymóg 1. klasy (R10)
+**Cel: katalog/PDP mają być SUPER SZYBKIE i nowoczesne — poziom Ideograma, wyraźnie lepiej niż Mixtiles/Displate/iamfy (stare stacki).** Architektura to umożliwia (Next 16 + CDN + R2/CF Images + RSC); tu jest **dyscyplina, która to egzekwuje** — obowiązkowa w każdym Unicie UI (6, 7) i mierzona.
+
+**Twarde progi (mierzone Lighthouse + Playwright, nie „na oko"):**
+- **Core Web Vitals „good":** LCP < 2.5 s · INP < 200 ms · CLS < 0.1. Lighthouse Performance (mobile) **≥ 90**.
+- **Obrazy = największe ryzyko:** ZAWSZE przez `ImageDelivery.derivativeUrl()` w rozmiarze pod slot (nigdy pełny master w siatce) · nowoczesny format (AVIF/WebP) · **leniwe ładowanie + blur-placeholder** · jawne `width`/`height` (zero CLS).
+- **Nawigacja jak SPA:** streaming z `<Suspense>` + **szkielety** (zero białego ekranu) · **prefetch** linków w viewport · client-side transitions.
+- **Lekki client-JS:** Server Components domyślnie; `"use client"` tylko na interaktywne wyspy (buy-box, cart). Katalog = głównie zero-JS.
+- **Płynny scroll na dużych listach:** keyset infinite-scroll + prefetch następnej strony; przy potrzebie wirtualizacja.
+
+**Benchmark vs Ideogram (bramka jakości):** w Unitach 6/7 porównać czas-do-pierwszego-obrazu i płynność scrolla wprost do Ideograma (Playwright na 1440/768/390 + Lighthouse). „Gotowe" = nie wolniej/gorzej niż Ideogram na tych samych warunkach. Faza 1 osiąga to na Supabase Storage + prostym loaderze; pełny Ideogram-class (R2+CF Images, Typesense instant-search) to *dokładanie* szwów, nie przepisywanie.
 
 ## Kontekst i research
 
@@ -226,8 +239,8 @@ Pogrupowane w pod-fazy: **A. Fundament & dane** · **B. POD & pricing** · **C. 
 
 - [ ] **Unit 6: Katalog (strona) na `_shell`**
 
-**Cel:** Strona katalogu — feed kuratorowanych grafik, wejście na PDP.
-**Wymagania:** R1.
+**Cel:** Strona katalogu — feed kuratorowanych grafik, wejście na PDP. **Super szybki, nowoczesny (R10).**
+**Wymagania:** R1, R10.
 **Zależności:** Unit 5.
 **Pliki:**
 - Stwórz: `src/app/(shop)/page.tsx` (Server Component; katalog + lensy; reuse layout z pilot `home`)
@@ -238,16 +251,19 @@ Pogrupowane w pod-fazy: **A. Fundament & dane** · **B. POD & pricing** · **C. 
 **Skills in play:** tailwind-react-guidelines, ux-ui-guidelines
 **Podejście:** Server Component domyślnie; dane przez catalog service. ProductCard = nowy plik wzorowany na FeedCard (NIE edytować pilota). Responsywność jak `_shell`.
 **Wzorce do naśladowania:** `src/app/pilot/home/page.tsx` (feed/masonry), `src/app/pilot/_shell/app-sidebar.tsx`.
+**Podejście (wydajność):** obrazy kart przez `ImageDelivery` w rozmiarze pod slot (nie master) + leniwe + blur + jawne wymiary (zero CLS); Server Component (zero/mało JS); streaming + szkielet; prefetch linków; keyset infinite-scroll. (patrz §Wydajność)
 **Scenariusze testowe:**
 - [E2E] Otwórz `/`, snapshot; widoczna siatka ProductCard; klik karty → nawigacja na `/product/<slug>`. Sprawdź 1440/768/390 (Playwright resize), czysta konsola.
+- [E2E] Karty ładują się z placeholderem→obraz (bez skoku layoutu); scroll płynny.
 **Weryfikacja:**
 - `pnpm build` przechodzi.
 - [E2E] Playwright: katalog renderuje ≥1 kartę, klik prowadzi na PDP, brak błędów konsoli na 1440/768/390.
+- [E2E] **Wydajność (R10):** Lighthouse Performance (mobile) ≥ 90; LCP < 2.5 s, CLS < 0.1; obrazy serwowane w rozmiarze pod slot (nie master). Benchmark czasu-do-pierwszego-obrazu **nie gorszy niż Ideogram** na tych samych warunkach.
 
 - [ ] **Unit 7: PDP single-piece na `_shell` (pickery + cena na żywo)**
 
-**Cel:** Strona produktu z pickerami i ceną liczoną serwerowo.
-**Wymagania:** R2.
+**Cel:** Strona produktu z pickerami i ceną liczoną serwerowo. **Szybka, nowoczesna (R10).**
+**Wymagania:** R2, R10.
 **Zależności:** Unit 4, Unit 5, Unit 6.
 **Pliki:**
 - Stwórz: `src/app/(shop)/product/[slug]/page.tsx` (Server Component; odwzorowanie układu `image-detail`)
@@ -266,6 +282,7 @@ Pogrupowane w pod-fazy: **A. Fundament & dane** · **B. POD & pricing** · **C. 
 **Weryfikacja:**
 - `pnpm vitest run` (test ceny) zielony.
 - [E2E] Playwright: zmiana rozmiaru zmienia cenę; disabled variant nieklikany; add-to-cart zwiększa licznik koszyka.
+- [E2E] **Wydajność (R10):** główny obraz przez `ImageDelivery` (rozmiar/format pod viewport, blur→obraz, zero CLS); LCP < 2.5 s; Lighthouse Performance (mobile) ≥ 90; refetch ceny nie blokuje renderu strony (streaming).
 
 ### D. Koszyk, checkout, fulfillment
 
