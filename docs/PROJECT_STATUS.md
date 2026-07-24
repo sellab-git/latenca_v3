@@ -59,6 +59,7 @@ Small Phase-A follow-ups (optional, low priority): wire account menu to the mobi
 
 ## Key files
 - **`docs/decisions/flow-screens-spec.md` — THE build spec (v1). Read this + `reconciliation-with-18.md` before any build.**
+- **`docs/decisions/prior-art-reuse.md` — port map: the backend (~80%) is portable from Artur's earlier Gelato/POD projects (Motowalls/Printly/Pawtraits). Read before writing ANY backend code. Also 2 strategic warnings: distribution/CAC is the real constraint; prior attempts all died at over-planning.**
 - `docs/teardowns/{mixtiles,iamfy,displate,market-scan}.md` — 6 competitors torn down live (single-piece PDP patterns, advisor surface, guest checkout, conversion levers).
 - `CLAUDE.md` — project instructions + RULE #1 (reuse) + doc index.
 - `docs/ideogram/image-detail.md` — the pilot screen's full extraction spec (tokens → shadcn vars, component inventory, per-breakpoint blueprints, states, sample content).

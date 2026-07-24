@@ -12,6 +12,10 @@
 - **Wall composer = differentiator / optional layer**, done well and modernly — but **N=1 pays no complexity tax** for the multi-piece machinery.
 - **MVP boundary (D-030):** shop spine + advisor. The advisor is the ONLY AI moment. **Recolor (warm/gallery) is the LAST step.**
 - **Non-negotiables:** shadcn from day 1 · reuse `_shell`, grep before authoring · guest-first · POD = source of truth · Stripe behind `PaymentProvider` · no AR · no open AI generation in MVP (generation = future seam via `ArtworkSource`) · no free drag.
+- **★ Strategic guardrails (from prior-art review — `prior-art-reuse.md`):**
+  - **The real constraint is DISTRIBUTION / CAC, not the product.** Cold CAC ~$60–80 > ~$40 single-print margin = loss per order; only bundles/whole-walls turn positive. The build is necessary but NOT sufficient — a distribution plan + the sets economics are the survival questions. Don't treat the build as validated demand.
+  - **Ship the spine FAST; every prior Latenca/Printly/DoradcAI attempt died at over-planning, zero shipped.** Resist schema-for-every-future-pivot. Phase 1 = a working single-piece shop, nothing more.
+  - **The backend is NOT greenfield — port ~80% from `prior-art-reuse.md`** (Motowalls Gelato+Pricing Engine, Printly orders/webhooks/verification-log, Pawtraits production plumbing). Re-anchor EUR/VAT → USD + Stripe Tax.
 
 ---
 
@@ -87,9 +91,9 @@ The mature pattern matched from Displate/Andy okay/Juniqe, on our design:
 
 ## 4. Data model (DAY 1 — retrofit = full rewrite)
 
-`ARTIST` (first-class, even if attribution-only) · `ARTWORK` (`source` + `collection`, hi-res master, tags, `allowed_tones`/`allowed_crops`, **no price**) · `DERIVATIVE` (appearance recipe) · `PRODUCT/VARIANT` (virtual SKU = artwork × size × material × mat × frame, **price computed**) · `SET/WALL` (packages N pieces — the Project) · `ORDER/ORDER_LINE` (frozen at purchase) · `PAYOUT/MODERATION` (phase-2 seam). Keep the **generation seam** (`ArtworkSource` / D-020 vendor abstraction) unused in MVP.
+`ARTIST` (first-class, even if attribution-only) · `ARTWORK` (`source` + `collection`, hi-res master, **`source_image_url` + pixel dims** for DPI→print-size, `allowed_tones`/`allowed_crops`, orientation, **no price**) · `DERIVATIVE` (appearance recipe) · **`VARIANT` = ONE GLOBAL table** keyed by (size × material × frame × extras), ~40–100 rows **not per-artwork** (port Motowalls `gelato_products`, `006_*.sql`), with **`pod_product_uid` + regional `_us`/`_au` stored per row (NEVER constructed — per-material UID formats are irregular)**, `production_cost_cents`, computed `display_price`; ARTWORK just supplies the print file + orientation · `SET/WALL` (packages N pieces — the Project) · `ORDER/ORDER_LINE` (two-table, **immutable snapshot columns**, dual status enums, tracked-only CHECK — port Printly `0020/0021`) + `order_costs` (real Gelato receipt for true margin) · `PAYOUT/MODERATION` (phase-2 seam, **drop for MVP** — we're single-seller not a marketplace). Keep the **generation seam** (`ArtworkSource` / D-020 vendor abstraction) unused in MVP. **All schema/plumbing: port from `prior-art-reuse.md`, don't re-author.**
 
-**Pricing = an internal Pricing Engine (decided 2026-07-24 — A3).** A build component, NOT hardcoded numbers: pulls **real Gelato costs via API — product/material + print + shipping** — and grosses up to retail: `net = (Gelato_product+print+ship + fixed) ÷ (1 − margin% − artist% − commission%)`. **Gelato = source of truth per SKU.** The actual **% (margin / artist share / commission) are TBD — to be computed from real Gelato prices, never fabricated.** Each extra piece ships cheap (sets economics); USA ≈ 2× EU margin; artist cap ~40%, margin floor. Materials = **ALL Gelato substrates (A2): paper · canvas · wood · metal · acrylic · foam.**
+**Pricing = an internal Pricing Engine (decided 2026-07-24 — A3). PORT `07. Motowalls/lib/pricing.ts` + `margin-config.ts` + `margin-calculator.ts`** (the one prior project that actually built it — Printly & Pawtraits only stubbed it; see `prior-art-reuse.md`). Formula: `netto = productionCost ÷ (1 − stripe% − returns% − marketing% − fixed% − targetMargin%)` → round UP to a **NICE_PRICE_GRID** (19/24/29…). Cost constants (Motowalls defaults): Stripe 3.5% / returns 5% / marketing 10% / fixed 10%; per-catalog target margin (posters/canvas 30%, premium 20%) — **all % are tunable, computed/validated from real Gelato costs, never fabricated.** **★ RE-ANCHOR EUR→USD:** drop the VAT-inclusive `×(1+VAT)` step → **pre-tax retail + Stripe Tax at checkout**; USA ≈ 2× EU margin. **Cost source (reconciled):** store per-variant `production_cost_cents` + a shipping table, refreshed by an **offline sync job**, and **verify with `POST /v4/orders:quote` at order time** (returns cost + shipping together) — never block the cart on a request-time price call (Gelato price API returns null for framed-canvas; no public flat shipping API). **Gelato = source of truth per SKU.** Materials = **ALL Gelato substrates (A2): paper · canvas · wood · metal · acrylic · foam.**
 
 ---
 
@@ -125,9 +129,14 @@ No AR / room compositing · no open AI generation (advisor only; generation = fu
 - **D — Parked (later):** multi-address (→ separate orders) · B2B · gifts · AI generation (future seam) · user uploads.
 
 **Still genuinely open (parameterize when building, do NOT fabricate):**
-- Pricing % values (margin/artist/commission) — from real Gelato costs.
+- Pricing % values (margin/artist/commission) — tune from real Gelato costs (Motowalls defaults as starting point).
 - Layout presets: add N=1/2, expand count per N via the generator, add frames/materials layer to the ported engine; map 18's 9-size vocab ↔ Gelato sizes.
 - Exact auth provider set (Google/Apple/…); grid curation level; recolor palette.
+- **⚠️ AI-print quality (if A1 self-generated):** does AI art at 70×100 @300 DPI look good on paper? Never tested in prior attempts → needs an upscaler in the pipeline **+ a real ~$25 test print before relying on AI as a source.**
+- **Distribution / CAC plan** — the actual survival question (strategic guardrail §0); not a build task, but must not be ignored.
+
+## 10. Prior-art reuse — the backend is ~80% portable
+See **`prior-art-reuse.md`** (full port map from 5 prior projects). Headlines: **PodProvider** (Motowalls `lib/gelato.ts` bodies + Printly `lib/fulfillment/provider.ts` interface) · **Pricing Engine** (Motowalls `lib/pricing.ts`, re-anchor USD) · **variant table** (Motowalls `gelato_products`) · **orders schema + webhooks + idempotency** (Printly `0020/0021` + Motowalls webhooks) · **checkout hardening + circuit-breaker + plumbing** (Pawtraits) · **advisor rank/match** (DoradcAI) · **content seed** (17's CC0 catalog) · **Gelato empirical quirks** (Printly's 63-draft-order verification log — WEBP rejected, no auto-rotate, 4mm bleed, store-not-construct UIDs, permanent public print files). Fold these into the `pod-fulfillment` + `payments` skills before Phase-1 build.
 
 ---
 
