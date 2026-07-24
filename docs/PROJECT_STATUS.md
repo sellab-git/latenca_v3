@@ -1,29 +1,26 @@
 # Latenca — Project Status / Resume Point
 
-**Updated:** 2026-07-23 · **Repo:** `sellab-git/latenca_v3` (public, `main`, auto-push) · **Stack:** Next.js 16 · React 19 · Tailwind v4 · shadcn/ui
+**Updated:** 2026-07-24 · **Repo:** `sellab-git/latenca_v3` (public, `main`, auto-push) · **Stack:** Next.js 16 · React 19 · Tailwind v4 · shadcn/ui
 
 > **New session? Read this file + `CLAUDE.md` first, then continue.** This repo is the single source of truth — everything you need is here (memory does not carry over between folders).
 
 ## What Latenca is
 Curated AI wall-art shop with an AI advisor. Solo founder (Artur), non-developer — communicate in **Polish**; code/UI/commits in **English**; UI/prices English/USD/global.
 
-## Where we are now
-**Pilot: static layout is 1:1; interaction states are NOT yet.** The Ideogram single-image-detail screen is rebuilt on shadcn at `src/app/pilot/image-detail/page.tsx`, verified against the real Ideogram across 390/430/768/1024/1440/1920 + dark theme (faithful, zero overflow, clean console, static-prerenders). Polish landed in `47ca6ea`.
+## Where we are now — Phase A (Ideogram 1:1) essentially DONE
+Four screens rebuilt 1:1 on shadcn, verified live via Playwright (1440 + 390, clean console, tsc+eslint 0):
+- **image-detail** `src/app/pilot/image-detail/page.tsx` — static layout (6 breakpoints + dark) **and** interactions: right panel is a full-height card (actions pinned bottom), `•••` menu with icons + submenus, rich account menu with a segmented Light/Dark/Auto, split account+bell.
+- **Home** `/pilot/home` — hero + composer + filter row + masonry feed (FeedCard = ProductCard seed).
+- **Styles** `/pilot/styles` — title + Explore/My-styles tabs + selectable named style cards (collections / shop-by-theme seed).
+- **Canvas** `/pilot/canvas` — LIGHT: tool rail + floating composer + zoom/history cluster + blank canvas (full editor out of scope; wall-builder → Mixtiles later).
 
-**BUT** a 2026-07-23 live-capture pass (Playwright driving the real Ideogram) found the **interactive** states were missed — the first pass only matched static frames. Full findings with exact measured values are in **`docs/ideogram/image-detail.md` §6 "Interaction inventory"**. This is now the **immediate next work** (before design-system extraction). The 9 gaps Artur flagged, all verified:
-1. Sidebar bottom = **2 buttons** (account + bell), not one combined.
-2. Right panel = **full-height card** (320×780, radius 30, bg `--card`, actions pinned bottom via `mt-auto`) — ours is a short block that only grows when prompt expands.
-3. `•••` menu needs **icons on every item + submenus** (Add to collection ▸, Report ▸) — ours is text-only.
-4. Account menu (bottom) is **rich** (profile+email, Free/credits, Upgrade plan, View profile, Help, Manage muted, Delete account, API, Log out) with a **segmented Light/Dark/Auto at the foot** — that's where theme lives, not standalone checkmark items. **Use a placeholder email, never commit Artur's real one.**
-5. Tools **"More" = inline expander** (adds Styles/Characters/Canvas/Batch, flips to "Less"), not a popup.
-6. **Collections** nav: hover → `›` expander → sub-collections.
-7. Sidebar **collapse** toggle by the logo; hover on the collapsed/logo area swaps the mark.
-8. **"Personal"** (top) = workspace-switcher dropdown.
-9. Prompt-row **Copy prompt / Use prompt (+)** actions (wire later).
+**Design base** (shared, reused — `src/app/pilot/_shell/`): `AppSidebar` (collapse + More→Less expander + rich account menu), `MobileNav` (bottom tab bar), `Composer`, `SegmentedControl`, `ImageActionsMenu`, `theme` hook. Plus in-screen seeds: `FeedCard`, `StyleCard`, tool rail, zoom cluster. **Reuse rule held** — Home/Styles/Canvas consume the shell, no duplication.
 
-Artur's call on sequencing was pending when we stopped for the day (options offered: all-at-once 1:1 vs structural-first vs prioritize). **Recommended next: do the interaction pass, verifying each state against the live app (open the real menu, measure, rebuild, re-check) — same pipeline as the static pass.** Live Ideogram is reachable via Playwright MCP (image-detail is a modal over `/explore`; its URL pattern is `ideogram.ai/g/<id>/<n>`; the sidebar is the shared app shell, so sidebar menus can be captured on `/explore` too). **Claude Chrome is NOT needed** — Playwright reaches the logged-in app and reads exact pixels/DOM.
+Why Ideogram at all (settled): it's the **skin** (visual language + primitives), not the **skeleton**. A shop needs a commerce spine Ideogram lacks (product detail w/ buy, wall builder, cart, checkout) — those blocks come from Phase B, not Ideogram.
 
-Run it: `pnpm dev` → http://localhost:3000/pilot/image-detail (narrow the window to see the 900px mobile/desktop switch).
+Known small gaps: account menu isn't wired to the mobile nav's Account tab yet; interaction items #6 (Collections sub-nav), #7 (logo-hover swap), #8 (workspace switcher), #9 (copy-feedback) from `docs/ideogram/image-detail.md` §6 were deprioritized (app-specific, low shop value). NEW badge red vs purple = recolor-step detail.
+
+Run it: `pnpm dev` → http://localhost:3000/pilot/home (also /styles, /canvas, /image-detail; narrow to 390 for mobile).
 
 ## The build pipeline (how we work — proven in the pilot)
 1. **Extract via Playwright** — Playwright MCP reaches the REAL logged-in Ideogram on Artur's own session and sets any viewport exactly. So Claude Code does the whole extraction itself: screenshot each breakpoint + read computed styles (`browser_evaluate`). No Claude Chrome, no manual DevTools. (Claude Design was dropped: it refused 1:1 on IP grounds and is read-only/HTML-only.)
@@ -32,14 +29,17 @@ Run it: `pnpm dev` → http://localhost:3000/pilot/image-detail (narrow the wind
 4. **Commit + push** (auto-push this repo).
 5. **Recolor + remap — LATER, separate steps.**
 
-## Immediate plan (Artur's chosen order: 1 → 3 → 2)
-1. **Polish the pilot screen to 100%.**
-   - **[DONE] static layout** — all 6 breakpoints + dark theme verified (`47ca6ea`). Nit: top thumbnail-strip alignment on mobile (spec says centered; live looks slightly left) — pending Artur's eyeball on a real phone.
-   - **[← RESUME HERE] interaction 1:1 pass** — implement the 9 interaction gaps in `docs/ideogram/image-detail.md` §6 (see the "Where we are now" list above). Verify each state against the live app. Use a placeholder email. This is the active task; Artur will pick sequencing (all-at-once vs structural-first) next session.
-2. **[AFTER] Extract shared blocks into our design system** — pull sidebar, search pill, detail panel, action-grid, thumbnail strip, icon-circle, etc. into reusable components. (Started: `PromptBlock` + `DetailRows` already extracted and shared desktop↔mobile.)
-3. **Then the next screens** (Home / My images / generator …) built fast from those blocks.
+## Immediate plan
+**Phase A (Ideogram 1:1) — DONE.** Four screens + design base shipped and pushed.
 
-Only after the shadcn system + screens exist do we **recolor** (warm/gallery) and **remap to our business logic** (wall composition / slot pick / advisor chat / cart-checkout — the product thinking lives in the read-only `18. Latenca` repo + its decisions D1–D11).
+**[← RESUME HERE] Phase B — competitive teardown → commerce spine.** Ideogram gave us the skin; a shop needs the parts it doesn't have. Next:
+1. **Teardown Mixtiles + Displate** (Playwright, same pipeline). Map entry paths, browse/filter, product detail, wall builder, cart/checkout, micro-interactions → matrix "who solves X best". Findings to `docs/teardowns/` (competitor screenshots stay local, never committed).
+2. **Best-of synthesis + our IA/funnel** — per screen, pick the best pattern + where the AI advisor injects. Anchor to `18. Latenca` decisions D1–D11.
+3. **Build the commerce blocks** Ideogram lacks (ProductCard-with-buy, size/frame/material picker, wall-builder canvas, cart line, checkout steps) into `_shell`/screens.
+
+Small Phase-A follow-ups (optional, low priority): wire account menu to the mobile Account tab; extract account menu into its own shared component; interaction items #6–#9.
+
+Only after the system + screens exist do we **recolor** (warm/gallery) and **remap to business logic** (wall composition / slot pick / advisor chat / cart-checkout — product thinking lives in read-only `18. Latenca` + decisions D1–D11).
 
 ## Locked rules
 - **shadcn = the foundation, from day one.** Never re-surface as a question.
