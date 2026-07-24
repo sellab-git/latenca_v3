@@ -44,7 +44,12 @@ Drove `/a/advisor/discover/...`: greeting *"Tell me where you're hanging, and I'
 
 **REJECT / OUR EDGE:** their arrangements are **row / grid (uniform) only — no curated balanced designed layouts** → our edge = **curated layouts per N** (the designed composition they lack; row+grid we also cover as our "Free/grid" state). AR "see it on your wall" — out (D-021/D-033); their "Flat" default aligns with us. Saving model is fragmented (Shortlist vs Curations vs For You). Feeds GAP #3 (advisor proposal surface) in `reconciliation-with-18.md`.
 
-**Still to verify (this teardown, areas B–G):** Style Quiz on-ramp · "Try a brief" · room upload/AR flow · what creates a **Curation** (stayed 0) · **Gallery Walls lens** (do they sell pre-designed curated walls?) · artwork **PDP** (pickers) · **cart → checkout → identity/payment** · mobile · empty/error states.
+**Gallery Wall SETS as products (verified — confirms our edge):** iamfy sells pre-made sets by piece count: `/collections/{2,3}-print-gallery-wall-sets`, `/collections/gallery-walls`, 24+ named sets ("Wabi Sabi Serenity", "Quiet Contemplation", "Geometric Gold"… from £229.95). A set PDP (`/products/wabi-sabi-serenity`): **Wall Size dropdown** (197×81 cm — scales the whole set, in/cm toggle) + **3 FRAMES**, each print with its own **Frame + Border pickers** (£122.90 ea), "Limited edition, made to order in the UK, by <artist>". **BUT the composition is a straight ROW of 3 equal 60×80 prints (verified in the PDP render) — a curated ART PAIRING, not an asymmetric designed LAYOUT.**
+- **★ Confirms Latenca's edge, precisely:** across the advisor wall (row/grid) AND the pre-made sets (row), **nobody does asymmetric balanced gallery compositions with varied sizes/positions.** They curate *which art goes together*; the *arrangement* is always uniform. Our edge = **curated LAYOUTS per N** (asymmetric, cm-true, varied) — the designed composition the whole category skips.
+- **★ Validates our size model:** set PDP = **wall-level Size (scales all) + per-piece Frame/Border** — exactly our "designed wall = wall-scale sizing, per-piece material/frame" rule.
+- The advisor wall and the shop share **ONE cart** (advisor pieces showed as cart count 6 on shop pages).
+
+**Still to verify (areas B–G, lower priority now the core is mapped):** Style Quiz on-ramp · "Try a brief" · room upload/AR flow · what creates a **Curation** (stayed 0) · single-artwork **PDP** pickers · **cart → checkout → identity/payment method** · mobile · empty/error states.
 
 ## Still to map
 Fy! PDP (pickers/frames), cart/checkout + identity/payment method.
