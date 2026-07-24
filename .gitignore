@@ -56,3 +56,6 @@ iamfy-*.jpeg
 
 # costs/keys — never commit (CLAUDE.md rule)
 /private/
+
+# keep the template (no secrets)
+!.env.example
