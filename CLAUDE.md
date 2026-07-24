@@ -32,3 +32,9 @@ Next.js 16 · React 19 · Tailwind v4 · shadcn/ui (style `radix-nova`, Lucide i
 - Verify in the browser (Playwright / `pnpm build`) before claiming done.
 - Commit freely and **auto-push** (Artur's standing hands-off rule for `latenca_v3` — don't ask). No `[deploy]` tag unless Artur explicitly says deploy.
 - `private/` (costs/keys) is never committed.
+
+## Claude system (`.claude/`)
+This repo runs the `claude-code-starter` machinery (pipeline `dev-*`, review agents, tech skills, knowledge base) **adapted to our stack**. It is mid-adaptation on branch `chore/claude-foundation`.
+- **Read `.claude/rules/latenca-overrides.md` FIRST** — it states rule precedence (global `~/.claude/rules/` win → overrides → starter `coding-rules.md`) and the Next-16/Vercel/Supabase-SSR/Stripe-abstracted/POD stack facts that override the starter's Vite/Coolify assumptions.
+- **`docs/claude-foundation-plan.md`** — the completeness contract: 6 workstreams (A–F) with a checklist; a starter skill isn't Next-ready until its box is ticked.
+- Locked product decisions live in `docs/CONCEPTS.md`.
