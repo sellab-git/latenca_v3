@@ -18,8 +18,16 @@ Competitors fragment "creating wall art" into **disconnected silos** — each go
 - **"Help me decide"** — the **AI advisor** leads (our differentiator; the connective tissue between goals).
 - **"It's a gift"** — gifting path.
 
-## The unifying idea (hypothesis, to validate)
-A **goal-router entry** (state intent, or let the advisor infer it) → the right tool for that goal → a **shared wall-builder canvas** (where any source — curated / generated / uploaded — lands and gets sized/framed/placed) → **one cart → checkout → POD**. The **advisor** is the spine that can move a customer between goals ("actually, generate something for that empty slot") without a context switch. The point: the *silos become modes inside one flow*, not separate destinations.
+## The unifying idea (hypothesis — now part-VALIDATED by Fy!/iamfy)
+A **goal-router entry** (state intent, or let the advisor infer it) → the right tool for that goal → a **shared wall-builder canvas** (where any source — curated / generated / uploaded — lands and gets sized/framed/placed) → **one cart → checkout → POD**. The **advisor** is the spine that can move a customer between goals ("actually, generate something for that empty slot") without a context switch. The *silos become modes inside one flow*, not separate destinations.
+
+**Fy!/iamfy validates this is real & current (2026):** their home IS an advisor ("Tell us about your wall. We'll do the rest. Free, no signup.") with three coexisting on-ramps into **one catalog + one cart**:
+- **Advisor brief** — open natural-language box ("calm bedroom, warm neutrals") + "Add photo" → curated **boards**. De-risked with clickable **"Try a brief"** examples.
+- **Style Quiz** — structured alternative on-ramp.
+- **Multi-lens browse** — by Style / Room / Trend / Gallery-Wall / Frame — many doors, one catalog.
+All **guest-first** (no signup to start) — consistent with `auth-onboarding.md`.
+
+**Latenca's concrete target (draft):** the same three on-ramps, but the advisor is **generation-capable** (curated AI art + on-demand generation, not just artist curation), and boards land in a **deeper Mixtiles-grade wall-builder** where **each slot accepts any source** (curated / AI / photo). Displate supplies the **PDP/commerce spine** (material+size pickers, social proof, cart/checkout) for the single-piece path. So: **Fy!'s advisor-led unified entry + Mixtiles's wall canvas & slot-fill + Displate's PDP/commerce spine + our AI generation** = the synthesis.
 
 ## What each teardown must extract (to fill this doc)
 Per source (Mixtiles ▸ Displate ▸ iamfy ▸ others):
