@@ -29,6 +29,7 @@ Art · orientation · **size** · material · frame — each piece independent. 
 - **Orientation fitting rule:** Portrait art → portrait or square slot · Landscape → landscape or square · Square → square only. **`allowed_crops` (per-artwork metadata) is the final gate** (a portrait with no good 1:1 crop can't take a square slot).
 
 ### 1.3 Layouts & arrangement (designed-wall state)
+- **★ PORT folder 18's layout engine (decided 2026-07-24).** `18. Latenca/prototypes/mockups/shared/wall-layouts.js` = a complete, cm-true, **27-layout** engine (counts 3–12, 2–3 named curated presets each: Triptych / Hero & Stack / The Joyful Five / grids…), authored in its own cm grid from Mixtiles *ideas* (not copied geometry), with generator `gen-wall-layouts.py` and **frozen rules `18/docs/wall-spec.md`** (D1 size, D4 counts, D5 orientation — the origin of our rules). It's **data + logic (not UX), so it transfers as SPEC** (governing rule). **To do on port:** add N=1 & N=2, add the frames/materials layer (18 parked it — we want full Gelato), expand presets per N via the generator, map its **9-size vocabulary** (Portrait/Landscape/Square × 3 tiers) onto real Gelato sizes. Our **Free state (§1.1) sits alongside** this engine.
 - **Curated layouts per N**, spanning **designed compositions ↔ grids**. **No free drag** (layout dictates geometry).
 - **"+" (add slot)** = additive/safe (existing pieces stay; appends one) → no surprise re-flow. **"Browse layouts / change arrangement"** = shows all curated layouts for the target N (incl. non-additive) and re-flows *by explicit choice*.
 - **Reorder = tap-swap** ("swap position, tap another slot" — from iamfy), never drag.
@@ -56,7 +57,7 @@ Three core surfaces + a detail overlay. All on `_shell` (AppSidebar, MobileNav, 
 ### 2.2 Single-piece PDP — the PRIORITY (detail overlay = reuse `image-detail`)
 The mature pattern matched from Displate/Andy okay/Juniqe, on our design:
 - Big image + context/room shots + **"drag to move" tilt**; **Flat default, NO AR**.
-- **Pickers:** Material · Size (· Frame) — segmented (`SegmentedControl`). **Live price on size**; **variants availability-gated** per POD × destination (unavailable = disabled).
+- **Pickers:** Material (**all Gelato substrates: paper · canvas · wood · metal · acrylic · foam** — A2) · Size · (· Frame) — segmented (`SegmentedControl`). **Live price on size/material** (Pricing Engine, §4); **variants availability-gated** per POD × destination (unavailable = disabled). Single-piece PDP may offer a wider size range than the wall's 9-size layout vocabulary.
 - **Decision-guidance labels** on sizes ("Most Popular" / "Best Value") — literal "sell confidence, not choice."
 - **Progressive config** — keep the PDP clean; frame/extras can be a secondary step.
 - **Social proof** (rating + review count) · **artist / collection attribution + story**.
@@ -80,7 +81,7 @@ The mature pattern matched from Displate/Andy okay/Juniqe, on our design:
 - **One persistent docked panel** (D-046), **never a gate** (D-022). Present on catalogue AND builder.
 - **Two entry modes:** free-text brief + structured quiz → a **persistent guest taste profile**.
 - **Output = a wall taking shape, NOT a list.** The advisor's picks **LAND in the curated slots** (hero slot first, supporting next) — delivering the composition iamfy only promises. Each placed piece carries a **one-line "why"** (advisor-as-designer). Refine via **regenerating chips incl. a negative escape**; visible **context chips** (room/style) editable.
-- **Deterministic ranking (not LLM)** for the pick order, grounded in real product data. AI = discovery + composition; **checkout stays ours** (OpenAI killed Instant Checkout → discover via AI, pay in our own checkout).
+- **Rules-based, NOT full intelligent AI (decided 2026-07-24 — B2):** the advisor **suggests from the available pool + fills slots** via **deterministic ranking/filtering** (taste profile + orientation/availability + curation rules), grounded in real product data. Full LLM composition = **too complex/expensive to maintain → out of MVP** (a light LLM only for parsing the free-text brief, optional). AI = discovery + slot-fill; **checkout stays ours** (OpenAI killed Instant Checkout → discover via AI, pay in our own checkout).
 
 ---
 
@@ -88,13 +89,13 @@ The mature pattern matched from Displate/Andy okay/Juniqe, on our design:
 
 `ARTIST` (first-class, even if attribution-only) · `ARTWORK` (`source` + `collection`, hi-res master, tags, `allowed_tones`/`allowed_crops`, **no price**) · `DERIVATIVE` (appearance recipe) · `PRODUCT/VARIANT` (virtual SKU = artwork × size × material × mat × frame, **price computed**) · `SET/WALL` (packages N pieces — the Project) · `ORDER/ORDER_LINE` (frozen at purchase) · `PAYOUT/MODERATION` (phase-2 seam). Keep the **generation seam** (`ArtworkSource` / D-020 vendor abstraction) unused in MVP.
 
-**Pricing:** gross-up `net = (Gelato_cost + fixed) ÷ (1 − margin% − artist% − commission%)`; **Gelato = source of truth per SKU** (fetched at build); each extra piece ships ~€0.29 (sets economics); USA ≈ 2× EU margin; artist cap ~40%, margin floor.
+**Pricing = an internal Pricing Engine (decided 2026-07-24 — A3).** A build component, NOT hardcoded numbers: pulls **real Gelato costs via API — product/material + print + shipping** — and grosses up to retail: `net = (Gelato_product+print+ship + fixed) ÷ (1 − margin% − artist% − commission%)`. **Gelato = source of truth per SKU.** The actual **% (margin / artist share / commission) are TBD — to be computed from real Gelato prices, never fabricated.** Each extra piece ships cheap (sets economics); USA ≈ 2× EU margin; artist cap ~40%, margin floor. Materials = **ALL Gelato substrates (A2): paper · canvas · wood · metal · acrylic · foam.**
 
 ---
 
 ## 5. Commerce work-order (audit D1–D11 = MVP backend)
 
-Shared **Catalog Engine** (⚠️ Home filters are a verified MOCK — must be built) · **live Gelato shipping quote** (no flat rate) · **Stripe Tax** (tax-exclusive) · **availability per variant × destination** · **deterministic pick ranking** (not LLM) · zero-results always has an exit · **max 12 pieces** · itemized cart, no cross-sell spam · context-scoped chat-chip registry (wall/piece/pick).
+Shared **Catalog Engine** (⚠️ Home filters are a verified MOCK — must be built) · **Pricing Engine** (live Gelato product+print+ship costs → gross-up, §4) · **live Gelato shipping quote** (no flat rate) · **Stripe Tax** (tax-exclusive) · **availability per variant × destination** · **deterministic pick ranking** (not LLM) · **Wall layout engine** (ported from 18, §1.3) · **content-import pipeline** (source-agnostic — A1) · zero-results always has an exit · **max 12 pieces** · itemized cart, no cross-sell spam · context-scoped chat-chip registry (wall/piece/pick).
 
 ---
 
@@ -110,13 +111,23 @@ No AR / room compositing · no open AI generation (advisor only; generation = fu
 
 ---
 
-## 8. Open items (decide / parameterize later — do NOT fabricate)
+## 8. Decisions locked 2026-07-24 (Artur) + what stays open
 
-- **Preset layout library:** which N are supported, how many curated layouts per N — must be **curated + verified**, not invented (I fabricated a subset earlier; corrected).
-- Grid curation level; per-piece vs wall material/frame granularity edge cases.
-- Multi-address (future); cause/impact angle (optional, on-brand); B2B/gifts homes.
-- **Auth account method** (social / password / OTP — **magic-link excluded**, memory `no-magic-link-auth`); still guest-first regardless.
-- Recolor palette (warm/gallery) — the LAST step.
+**Locked this round:**
+- **A1 — Content source = SOURCE-AGNOSTIC by design.** Undecided which first (artist partners / public-domain / self-generated), so the **data model MUST support multiple sources AND multiple add-methods** (`ARTWORK.source` + import pipelines). Don't hardcode one origin.
+- **A2 — Materials = ALL Gelato substrates from day 1:** paper · canvas · wood · metal · acrylic · foam (whatever Gelato offers), driven from the Gelato catalog.
+- **A3 — Pricing = an internal Pricing Engine** built on **real Gelato API costs (product + print + shipping)** grossed up (§4). The **% split (margin/artist/commission) TBD — computed from real prices, never fabricated.**
+- **A4 — Auth = simple standard best-practice: social login + normal email/password** (guest-first until checkout; **magic-link excluded**, memory `no-magic-link-auth`). Confirm exact best-2026 pattern when building auth (Phase 1b); not blocking Phase 1.
+- **B1 — Wall layout engine = PORT folder 18's `wall-layouts.js` + rules** (§1.3) — assessed, it's a strong start.
+- **B2 — Advisor = rules-based** (suggest-from-pool + slot-fill), not full LLM (§3).
+- **B3 — Wizard-of-Oz validation = dropped** (not needed for a rules-based advisor).
+- **C1 — NO charity/cause angle.** · **C2 — Artist story = very small** (short bio max). · **C3 — Urgency = tasteful, not spammy.** · **C4 — Recolor = maybe revisit 18's lavender/violet later (TBD, LAST step).**
+- **D — Parked (later):** multi-address (→ separate orders) · B2B · gifts · AI generation (future seam) · user uploads.
+
+**Still genuinely open (parameterize when building, do NOT fabricate):**
+- Pricing % values (margin/artist/commission) — from real Gelato costs.
+- Layout presets: add N=1/2, expand count per N via the generator, add frames/materials layer to the ported engine; map 18's 9-size vocab ↔ Gelato sizes.
+- Exact auth provider set (Google/Apple/…); grid curation level; recolor palette.
 
 ---
 
