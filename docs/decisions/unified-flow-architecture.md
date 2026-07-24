@@ -1,6 +1,20 @@
 # North-star — Unified flow architecture (one system, many entry goals → cart)
 
-**Status:** **PROPOSED v1** — synthesized from 3 live teardowns (Mixtiles/Displate/iamfy) + best-2026 research. Evidence-grounded; **awaiting Artur's review**. Supersedes the earlier EXPLORING draft. Date: 2026-07-24. → definitive architecture in the section **"Definitive architecture v1"** below.
+**Status:** **v1 — TO RECONCILE with folder `18. Latenca` (which is more mature).** Folder 18 has a fully-reasoned **LOCKED** decision log (D-001…D-037+) that already settles this space, and **corrects this v1 in key ways**. Folder 18's decisions GOVERN; this doc's *mechanics* stay useful only where they don't conflict. Awaiting Artur's call on whether to adopt 18's locks wholesale or revisit any. Date: 2026-07-24.
+
+> **⚠️ Where this v1 was WRONG vs folder-18 locks (must fix):**
+> - **NOT a generator.** D-030/D-020: open prompt-to-image = Ideogram's role, not ours. The only AI moment in MVP = the **advisor**. AI-generated art exists only as a **curated catalog source** (D-011), not a user "generate" on-ramp. → drop "generate AI art" as a core on-ramp.
+> - **No AR / room-photo compositing.** D-021/D-031/D-033/D-035: the surface is a **flat/neutral wall** (+ 3 calibrated sample rooms for scale). Uploads are an **analytical input** (read taste/colour), **never a canvas**. → drop "AR / upload your wall / see-it-in-your-room".
+> - **One flow, project-type as a parameter** (D-023), not 6 separate on-ramp silos. MVP types = empty wall / add-replace. Browse + advisor are two paths into the **same** catalog/PDP/checkout (D-007/D-022/D-037).
+> - **Advisor = front door, never a gate** (D-022); shop is the floor. Home = thin hybrid: search + immediate catalogue (D-037); top field = **search, not chat** (D-036).
+> - **Advisor + product page = ONE screen in two states** (D-034) — matches "two views of one canvas", but 18 has the concrete spec.
+> - Positioning: **"sell confidence, not choice"** (VISION). Distribution/CAC = risk #1, a product layer (D-027/D-028).
+> What survives from this v1: guest-first + our-own-checkout (OpenAI Instant-Checkout evidence), the Displate PDP/commerce-spine patterns, agentic-UI anti-patterns, DROOL all-to-cart — as *supporting 2026 evidence* on top of 18's locked architecture.
+
+---
+_Original v1 synthesis below is kept for the evidence, but read it through the reconciliation note above._
+
+
 
 ## The problem (what to beat)
 Competitors fragment "creating wall art" into **disconnected silos** — each goal is a different door (URL, sometimes a different subdomain), with its own builder. Mixtiles (teardown confirmed): Frame-your-photos `/photos`, Canvas `/canvas`, Pet/Family photo→AI `/photo-to-art`, Kids `kids.mixtiles.com`, Places `places.mixtiles.com`, Ready-made walls `/browse`, curated Art Collection `/collection`. The customer must **know which door to enter**; the flows don't converge. This is 2016-era architecture.
