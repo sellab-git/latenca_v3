@@ -21,10 +21,13 @@ This project runs the `claude-code-starter` machinery **adapted to Latenca's sta
 - **Light on React components** — do NOT force UI unit tests (global `code-quality.md`). UI is verified in the browser (Playwright), not RTL, unless the user asks.
 - Everything else from starter rule #2 holds: never weaken assertions, never edit a test to make it pass, fix the code not the test/linter.
 
-## Product architecture (locked 2026-07-24 — see `docs/CONCEPTS.md`)
+## Product architecture (see `docs/CONCEPTS.md`)
+**Locked (2026-07-24):**
 - **Fulfillment = Print-on-demand** (Gelato/Printful). Product data/prices/shipping come from the POD API; never invent them. Supabase holds orders + customers, not stock.
-- **Auth = progressive (Mixtiles-style)** — email is the low-friction gate to build a wall / checkout; full account optional later.
 - **Payments = Stripe now, behind a `PaymentProvider` abstraction** — no hardcoded Stripe in business logic; other gateways must be addable without a rewrite.
+
+**OPEN — do NOT implement yet:**
+- **Auth / onboarding model = UNDECIDED.** Candidate idea only: progressive email-gate (Mixtiles-style — email to start building a wall / checkout, full account optional later). Must be validated against multiple industry examples + best 2026 e-commerce/wall-art standards before we build it. Tracked as a research task; do not wire auth until it's decided.
 - **Design base = `src/app/pilot/_shell/`** — reuse these components; grep before authoring new UI (reuse is rule #1).
 - **1:1 → recolor → remap** — don't invent layout during the Ideogram rebuild; recolor (warm/gallery) and business-logic remap are later steps.
 

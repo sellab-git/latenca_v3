@@ -10,10 +10,13 @@
 - **Complete, not partial.** Track every workstream here; a piece is "done" only when adapted + verified, not when copied.
 - **Fork, don't blind-sync.** This becomes OUR system. `sync-template` (blind upstream overwrite) is DISABLED; we cherry-pick upstream improvements manually (workstream F).
 
-## Locked product decisions (2026-07-24) — feed the schema + knowledge base
+## Product decisions — feed the schema + knowledge base
+**Locked (2026-07-24):**
 - **Fulfillment = Print-on-demand** (Gelato/Printful). Products/prices/variants/shipping/availability come from the POD API (never invented). Supabase holds orders + customers, not stock.
-- **Auth = progressive, Mixtiles-style.** Email is the low-friction gate to start building a wall / checkout (capture contact early); full account optional later. Design from scratch.
 - **Payments = Stripe now, behind a `PaymentProvider` abstraction.** Must allow adding other gateways later without a rewrite. No hardcoded Stripe in business logic.
+
+**OPEN — idea only, do NOT implement:**
+- **Auth / onboarding model = UNDECIDED.** Candidate: progressive email-gate (Mixtiles-style). Needs research against multiple industry examples + best 2026 wall-art / e-commerce standards before we build. Tracked as a research task (part of Phase B teardowns). Do not wire auth until decided.
 
 ## The crux: Next 16 App Router ≠ Vite SPA
 Every UI/skill/agent that assumes Vite must be translated:
