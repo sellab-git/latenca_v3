@@ -10,9 +10,11 @@ paths:
 
 # Supabase Development Guidelines
 
+> **⚠️ Latenca (Next.js 16, NIE Vite):** dla integracji klient/serwer/sesji **autorytatywny jest `resources/latenca-nextjs-ssr.md`** (`@supabase/ssr`, `proxy.ts` zamiast `middleware.ts`, async `cookies()`, `getClaims` do gate'owania). Treść poniżej opisuje wzorce Vite SPA — bierz z niej SQL/RLS/Edge Functions/Realtime, ale **wiring klienta i auth rób wg resource'a Next**, nie wg przykładów SPA/`onAuthStateChange`.
+
 ## Cel
 
-Kompleksowy przewodnik dla pracy z Supabase w aplikacjach Vite SPA - autentykacja, baza danych, RLS policies, Edge Functions i bezpieczeństwo.
+Kompleksowy przewodnik dla pracy z Supabase - autentykacja, baza danych, RLS policies, Edge Functions i bezpieczeństwo. (Wiring klienta: patrz nota Latenca wyżej.)
 
 ## Kiedy Używać Tego Skilla
 

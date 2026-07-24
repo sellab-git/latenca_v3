@@ -33,13 +33,14 @@ description: "Wytyczne Next.js 16 App Router (Server Components, Server Actions,
 ## 5. Struktura i konwencje
 - App Router: `src/app/**`. Współdzielone bloki UI: **`src/app/pilot/_shell/`** — reużywaj (`AppSidebar`, `MobileNav`, `Composer`, `SegmentedControl`, `ImageActionsMenu`). Grep przed autorstwem (reuse = reguła #1).
 - Komponenty shadcn: `src/components/ui/` (styl radix-nova, ikony Lucide, CSS variables). Nie reinventuj — grep bibliotekę.
-- Config: **`next.config.ts`** (TS). Middleware/OWASP headers + Supabase session refresh: `src/middleware.ts` (patrz `security` + `supabase-dev-guidelines`).
+- Config: **`next.config.ts`** (TS). Request interception (OWASP headers + Supabase session refresh): **`src/proxy.ts`** — Next 16 **przemianował `middleware.ts` → `proxy.ts`** (export funkcji `proxy`, nie `middleware`; codemod `npx @next/codemod@canary middleware-to-proxy .`). Patrz `security` + `supabase-dev-guidelines`.
 - Ikony: Lucide React, nigdy emoji w UI. Kolory: CSS tokens (`text-primary`, `bg-card`), nie hex. Mobile-first.
 
 ## 6. Gotchas / breaking (Next 16)
 - Turbopack jest domyślny (`next dev`/`next build`). Nie zakładaj webpacka.
 - Brak `getServerSideProps`/`getStaticProps` (to Pages Router) — używaj Server Components + `generateStaticParams`/`generateMetadata`.
-- `cookies()`, `headers()`, `params`, `searchParams` — sprawdź w docs czy w tej wersji są async (Next 16 przesuwał je na async). **Przeczytaj docs, nie zgaduj.**
+- **`middleware.ts` → `proxy.ts`** (renamed/deprecated w 16.0.0; export `proxy`, `config.matcher` bez zmian).
+- **`cookies()`/`headers()` są async** — `const cookieStore = await cookies()`. `params`/`searchParams` również async — `await` je. **Przeczytaj docs, nie zgaduj.**
 - `devIndicators` w `next.config.ts` może być `false` (użyte u nas — nakładka kolidowała z sidebarem).
 
 ## 7. Weryfikacja
