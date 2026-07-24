@@ -2,22 +2,15 @@
 
 /**
  * PILOT — Ideogram single-image detail screen, rebuilt 1:1 on shadcn/ui.
- * Palette = Ideogram (CSS vars in globals.css); recolor to gallery-warm is a later step.
+ * Palette = Ideogram (CSS vars in globals.css); recolor to gallery-warm is later.
  * Image / thumbnails are neutral placeholders (we don't embed Ideogram's artwork).
  * Structural switch at 900px: stacked (mobile/tablet) ↔ two-column (desktop).
+ * App-shell (sidebar, theme, ••• menu) comes from ../_shell (shared, reused).
  */
 
 import * as React from "react";
 import {
-  Home,
-  Images,
-  FolderOpen,
   Heart,
-  SlidersHorizontal,
-  Image as ImageIcon,
-  Blocks,
-  Sparkles,
-  MoreHorizontal,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
@@ -33,31 +26,11 @@ import {
   Eraser,
   Layers,
   FolderPlus,
-  Bell,
-  Gem,
-  ExternalLink,
-  Sun,
-  Moon,
-  Monitor,
-  Wand2,
-  FileText,
-  ImagePlus,
-  Palette,
-  User,
-  Flag,
-  VolumeX,
-  Trash2,
-  Code,
-  LogOut,
-  CircleHelp,
-  MessageCircle,
-  AtSign,
-  Play,
+  MoreHorizontal,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -69,11 +42,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -82,21 +50,10 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { AppSidebar } from "../_shell/app-sidebar";
+import { ImageActionsMenu } from "../_shell/image-actions-menu";
 
 /* ── data (placeholder content — shows what each slot holds) ── */
-const NAV = [
-  { icon: Home, label: "Home" },
-  { icon: Images, label: "My images" },
-  { icon: FolderOpen, label: "Collections" },
-  { icon: Heart, label: "My likes" },
-];
-const TOOLS = [
-  { icon: SlidersHorizontal, label: "Prompt Builder", badge: "NEW" },
-  { icon: ImageIcon, label: "Image Studio" },
-  { icon: Blocks, label: "AI Apps" },
-  { icon: Sparkles, label: "Models" },
-  { icon: MoreHorizontal, label: "More" },
-];
 const DETAILS: [string, string][] = [
   ["Type", "Generation"],
   ["Model", "Ideogram 3.0"],
@@ -116,53 +73,6 @@ const ACTIONS = [
 ];
 const PROMPT =
   "Aerial photograph with a slight diagonal tilt, showing the depth between sea and sand. Crystalline turquoise water with color gradation, gentle foam near the shore. White premium-fabric loungers and umbrellas, elegantly arranged. Soft shadows on the sand. A sophisticated, calm, exclusive summer mood. Captured with a high-resolution drone, 28mm-equivalent lens, warm late-morning light.";
-
-/* Placeholder signed-in persona — NEVER the real user's data (this screen is a
-   public 1:1 pilot; the account menu is shown for structure only). */
-const ACCOUNT = {
-  name: "mia.rivera",
-  email: "mia@example.com",
-  initial: "M",
-  plan: "Free",
-  credits: 12,
-};
-
-/* ── theme (Light / Dark / Auto — lives in the account menu, per Ideogram) ── */
-type ThemeMode = "light" | "dark" | "auto";
-
-function isThemeMode(v: unknown): v is ThemeMode {
-  return v === "light" || v === "dark" || v === "auto";
-}
-
-function useTheme() {
-  // read the persisted choice lazily on the client (server → "auto"); no
-  // load-then-set effect chain, so no cascading render / localStorage clobber.
-  const [mode, setMode] = React.useState<ThemeMode>(() => {
-    if (typeof window === "undefined") return "auto";
-    const saved = localStorage.getItem("theme");
-    return isThemeMode(saved) ? saved : "auto";
-  });
-  // apply the resolved class + persist; Auto follows the OS and reacts live
-  React.useEffect(() => {
-    const mq = window.matchMedia("(prefers-color-scheme: dark)");
-    const apply = () => {
-      const dark = mode === "dark" || (mode === "auto" && mq.matches);
-      document.documentElement.classList.toggle("dark", dark);
-    };
-    apply();
-    localStorage.setItem("theme", mode);
-    if (mode !== "auto") return;
-    mq.addEventListener("change", apply);
-    return () => mq.removeEventListener("change", apply);
-  }, [mode]);
-  return { mode, setMode };
-}
-
-const THEME_OPTIONS: { value: ThemeMode; label: string; icon: React.ElementType }[] = [
-  { value: "light", label: "Light", icon: Sun },
-  { value: "dark", label: "Dark", icon: Moon },
-  { value: "auto", label: "Auto", icon: Monitor },
-];
 
 /* ── small building blocks ── */
 function IconCircle({
@@ -191,351 +101,6 @@ function IconCircle({
       </TooltipTrigger>
       <TooltipContent>{label}</TooltipContent>
     </Tooltip>
-  );
-}
-
-/* Segmented control — reusable pill switcher (theme, later: view/currency…).
-   New design-system primitive (shadcn has no segmented control). */
-function SegmentedControl<T extends string>({
-  value,
-  onValueChange,
-  options,
-}: {
-  value: T;
-  onValueChange: (v: T) => void;
-  options: { value: T; label: string; icon: React.ElementType }[];
-}) {
-  return (
-    <div className="flex w-full items-center gap-1 rounded-lg bg-muted p-1">
-      {options.map((o) => {
-        const active = o.value === value;
-        return (
-          <button
-            key={o.value}
-            onClick={() => onValueChange(o.value)}
-            aria-pressed={active}
-            className={cn(
-              "flex h-7 flex-1 items-center justify-center gap-1.5 rounded-md text-[12px] font-medium transition-colors",
-              active
-                ? "bg-background text-foreground shadow-sm"
-                : "text-muted-foreground hover:text-foreground",
-            )}
-          >
-            <o.icon className="size-3.5" />
-            {o.label}
-          </button>
-        );
-      })}
-    </div>
-  );
-}
-
-/* The image `•••` overflow menu — icons on every item + submenus (Add to
-   collection ▸, Report ▸). Shared by the desktop panel and the mobile bar so
-   the block is authored once. Icons are the closest Lucide match to Ideogram's. */
-function ImageActionsMenu({ trigger }: { trigger: React.ReactNode }) {
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>{trigger}</DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-[236px]">
-        <DropdownMenuItem>
-          <Copy /> Copy image
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuLabel>Edit</DropdownMenuLabel>
-        <DropdownMenuItem>
-          <Shuffle /> Remix
-        </DropdownMenuItem>
-        <DropdownMenuItem>
-          <Wand2 /> Magic Fill
-        </DropdownMenuItem>
-        <DropdownMenuItem>
-          <Maximize2 /> Upscale
-        </DropdownMenuItem>
-        <DropdownMenuItem>
-          <Eraser /> Remove background
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuLabel>Reference</DropdownMenuLabel>
-        <DropdownMenuItem>
-          <FileText /> Describe image
-        </DropdownMenuItem>
-        <DropdownMenuItem>
-          <ImagePlus /> Use as reference
-        </DropdownMenuItem>
-        <DropdownMenuItem>
-          <Palette /> Use as style
-        </DropdownMenuItem>
-        <DropdownMenuItem>
-          <User /> Use as character
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuLabel>Manage</DropdownMenuLabel>
-        <DropdownMenuSub>
-          <DropdownMenuSubTrigger>
-            <FolderPlus /> Add to collection
-          </DropdownMenuSubTrigger>
-          <DropdownMenuSubContent className="w-[180px]">
-            <DropdownMenuItem>
-              <Plus /> New collection…
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>Inspiration</DropdownMenuItem>
-            <DropdownMenuItem>Wall art</DropdownMenuItem>
-          </DropdownMenuSubContent>
-        </DropdownMenuSub>
-        <DropdownMenuSub>
-          <DropdownMenuSubTrigger>
-            <Flag /> Report
-          </DropdownMenuSubTrigger>
-          <DropdownMenuSubContent className="w-[196px]">
-            <DropdownMenuItem>Inappropriate content</DropdownMenuItem>
-            <DropdownMenuItem>Spam or misleading</DropdownMenuItem>
-            <DropdownMenuItem>Copyright violation</DropdownMenuItem>
-          </DropdownMenuSubContent>
-        </DropdownMenuSub>
-        <DropdownMenuItem>
-          <VolumeX /> Mute creator
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
-}
-
-function NavItem({
-  icon: Icon,
-  label,
-  badge,
-  collapsed,
-  muted,
-}: {
-  icon: React.ElementType;
-  label: string;
-  badge?: string;
-  collapsed?: boolean;
-  muted?: boolean;
-}) {
-  return (
-    <button
-      className={cn(
-        "flex h-9 w-full items-center rounded-md px-3 text-[13px] font-semibold hover:bg-accent",
-        muted ? "text-muted-foreground" : "text-foreground",
-        collapsed && "justify-center px-0",
-      )}
-    >
-      <Icon className="size-5 shrink-0" strokeWidth={1.75} />
-      {!collapsed && (
-        <>
-          {/* tight gaps + snug badge so "Prompt Builder" fits even when the
-              sidebar scrollbar is present (steals ~15px of content width). */}
-          <span className="ml-2 min-w-0 truncate">{label}</span>
-          {badge && (
-            <Badge className="ml-1 h-4 shrink-0 rounded bg-primary px-0.5 text-[10px] font-semibold text-primary-foreground">
-              {badge}
-            </Badge>
-          )}
-        </>
-      )}
-    </button>
-  );
-}
-
-/* ── sidebar (desktop) ── */
-function Sidebar({
-  collapsed,
-  mode,
-  onModeChange,
-}: {
-  collapsed: boolean;
-  mode: ThemeMode;
-  onModeChange: (m: ThemeMode) => void;
-}) {
-  return (
-    <div
-      className={cn(
-        "flex h-full flex-col bg-sidebar text-sidebar-foreground transition-[width]",
-        collapsed ? "w-[65px] items-center" : "w-[219px]",
-      )}
-    >
-      {/* logo */}
-      <div className="flex h-16 items-center px-4">
-        <div className="flex items-center gap-2">
-          <div className="size-6 rounded-md bg-foreground" />
-          {!collapsed && (
-            <span className="text-lg font-extrabold tracking-tight">Latenca</span>
-          )}
-        </div>
-      </div>
-
-      <div className="flex-1 overflow-y-auto px-3">
-        {/* account switcher */}
-        {!collapsed && (
-          <button className="mb-2 flex h-10 w-full items-center gap-2 rounded-lg border px-2 text-[13px] font-semibold">
-            <Avatar className="size-6">
-              <AvatarFallback className="bg-muted text-[10px]">A</AvatarFallback>
-            </Avatar>
-            <span>Personal</span>
-            <ChevronDown className="ml-auto size-4 text-muted-foreground" />
-          </button>
-        )}
-
-        <nav className="flex flex-col gap-0.5">
-          {NAV.map((n) => (
-            <NavItem key={n.label} {...n} collapsed={collapsed} />
-          ))}
-        </nav>
-
-        {!collapsed && (
-          <p className="px-3 pb-1 pt-5 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-            Tools
-          </p>
-        )}
-        <nav className="mt-1 flex flex-col gap-0.5">
-          {TOOLS.map((t) => (
-            <NavItem key={t.label} {...t} collapsed={collapsed} />
-          ))}
-        </nav>
-
-        {!collapsed && (
-          <p className="px-3 pb-1 pt-5 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-            API
-          </p>
-        )}
-        <nav className="mt-1 flex flex-col gap-0.5">
-          <NavItem icon={ExternalLink} label="API Dashboard" collapsed={collapsed} muted />
-          <NavItem icon={ExternalLink} label="API Docs" collapsed={collapsed} muted />
-        </nav>
-      </div>
-
-      {/* bottom: credits + upgrade + user */}
-      <div className="mt-auto p-3">
-        {!collapsed && (
-          <div className="mb-3 rounded-xl border p-3">
-            <p className="text-[13px] font-semibold">12 slow credits left</p>
-            <p className="text-[12px] text-muted-foreground">Resets in 1 day</p>
-            <Button className="mt-3 h-9 w-full gap-1.5 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90">
-              <Gem className="size-4" /> Upgrade
-            </Button>
-          </div>
-        )}
-        {/* account + notifications — TWO controls (1:1 Ideogram). Account opens
-            the rich menu (identity, plan, actions, segmented theme); the bell is
-            its own notifications button. */}
-        <div className={cn("flex items-center gap-1", collapsed && "flex-col")}>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button
-                aria-label="Account menu"
-                className={cn(
-                  "flex min-w-0 flex-1 items-center gap-2 rounded-lg px-1 py-1 hover:bg-accent",
-                  collapsed && "flex-none justify-center px-0",
-                )}
-              >
-                <Avatar className="size-8">
-                  <AvatarFallback className="bg-muted text-[11px]">
-                    {ACCOUNT.initial}
-                  </AvatarFallback>
-                </Avatar>
-                {!collapsed && (
-                  <span className="min-w-0 truncate text-[13px] font-semibold">
-                    {ACCOUNT.name}
-                  </span>
-                )}
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" side="top" className="w-[264px]">
-              {/* identity */}
-              <div className="flex items-center gap-2 p-1.5">
-                <Avatar className="size-9">
-                  <AvatarFallback className="bg-muted text-[13px]">
-                    {ACCOUNT.initial}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="min-w-0 leading-tight">
-                  <p className="truncate text-[13px] font-semibold">{ACCOUNT.name}</p>
-                  <p className="truncate text-[12px] text-muted-foreground">
-                    {ACCOUNT.email}
-                  </p>
-                </div>
-              </div>
-              {/* plan + credits */}
-              <div className="flex items-center gap-1.5 px-1.5 pb-2 text-[13px]">
-                <span className="font-semibold">{ACCOUNT.plan}</span>
-                <span className="text-muted-foreground">·</span>
-                <span className="flex items-center gap-1 text-muted-foreground">
-                  <Gem className="size-3.5" /> {ACCOUNT.credits} credits left
-                </span>
-              </div>
-              <div className="px-1 pb-1">
-                <Button className="h-9 w-full gap-1.5 rounded-lg bg-foreground text-background hover:bg-foreground/90">
-                  <Gem className="size-4" /> Upgrade plan
-                </Button>
-              </div>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>
-                <User /> View profile
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <CircleHelp /> Help &amp; documentation
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <VolumeX /> Manage muted users
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Code /> API
-              </DropdownMenuItem>
-              <DropdownMenuItem variant="destructive">
-                <Trash2 /> Delete account
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <LogOut /> Log out
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              {/* theme lives here as a segmented control (per Ideogram) */}
-              <div className="p-1.5">
-                <SegmentedControl
-                  value={mode}
-                  onValueChange={onModeChange}
-                  options={THEME_OPTIONS}
-                />
-              </div>
-              <DropdownMenuSeparator />
-              <div className="flex items-center gap-3 px-2 py-1 text-[11px] text-muted-foreground">
-                <button className="hover:text-foreground">Terms</button>
-                <button className="hover:text-foreground">Privacy</button>
-                <div className="ml-auto flex items-center gap-0.5">
-                  {[MessageCircle, AtSign, Play].map((Icon, i) => (
-                    <button
-                      key={i}
-                      aria-label="Social link"
-                      className="grid size-6 place-items-center rounded-md hover:bg-accent hover:text-foreground [&_svg]:size-3.5"
-                    >
-                      <Icon />
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                aria-label="Notifications"
-                className={cn(
-                  "size-9 shrink-0 rounded-lg text-muted-foreground hover:bg-accent [&_svg]:size-4",
-                  collapsed && "size-8",
-                )}
-              >
-                <Bell />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="top">Notifications</TooltipContent>
-          </Tooltip>
-        </div>
-      </div>
-    </div>
   );
 }
 
@@ -758,24 +323,11 @@ function RelatedGrid() {
 
 /* ── page ── */
 export default function ImageDetailPage() {
-  const [collapsed, setCollapsed] = React.useState(false);
-  const { mode, setMode } = useTheme();
   return (
     <TooltipProvider delayDuration={200}>
       <div className="flex h-screen overflow-hidden bg-background text-foreground">
-        {/* sidebar — desktop */}
-        <aside className="hidden shrink-0 border-r min-[900px]:block">
-          <div className="relative h-full">
-            <Sidebar collapsed={collapsed} mode={mode} onModeChange={setMode} />
-            <button
-              onClick={() => setCollapsed((v) => !v)}
-              aria-label="Toggle sidebar"
-              className="absolute right-2 top-5 hidden size-6 place-items-center rounded-md text-muted-foreground hover:bg-accent min-[900px]:grid"
-            >
-              <ChevronLeft className={cn("size-4 transition-transform", collapsed && "rotate-180")} />
-            </button>
-          </div>
-        </aside>
+        {/* sidebar — shared app-shell */}
+        <AppSidebar />
 
         {/* main column */}
         <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
@@ -839,9 +391,7 @@ export default function ImageDetailPage() {
                   Follow
                 </Button>
               </div>
-              {/* segmented switcher: Image details ↔ Similar images.
-                  Measured 1:1 off live Ideogram mobile: left-aligned, h36, radius 30,
-                  px 14, 14px/400, active = --secondary pill / --foreground text. */}
+              {/* segmented switcher: Image details ↔ Similar images (measured 1:1). */}
               <Tabs defaultValue="details" className="gap-0 px-4 pb-28 pt-4">
                 <TabsList className="flex h-auto w-fit justify-start gap-1 bg-transparent p-0">
                   <TabsTrigger
@@ -871,8 +421,7 @@ export default function ImageDetailPage() {
             {/* ═══ desktop (two-column) ═══ */}
             <div className="hidden min-[900px]:block">
               <div className="flex gap-6 px-6 pb-6">
-                {/* image column with arrows — arrows hug the column edges,
-                    image centered between them (gap grows on wide screens, per spec). */}
+                {/* image column with arrows hugging the column edges */}
                 <div className="flex min-w-0 flex-1 items-center gap-2 px-2">
                   <Button
                     variant="ghost"
@@ -883,9 +432,6 @@ export default function ImageDetailPage() {
                     <ChevronLeft className="size-5" />
                   </Button>
                   <div className="flex min-w-0 flex-1 flex-col items-center gap-4">
-                    {/* width fills the column but is capped so height never exceeds
-                        min(100vh-180, 860); this prevents overflow at 1024 and keeps
-                        the 1440/1920 sizes identical to before. */}
                     <div className="aspect-[3/4] w-full max-w-[calc(min(100vh-180px,860px)*3/4)] rounded-xl bg-muted" />
                     <ThumbStrip size={44} />
                   </div>
