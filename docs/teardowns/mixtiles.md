@@ -53,8 +53,27 @@ Patterns to reuse: wall = **N-slot product template** (sold by size, discounted)
 Their "AI" silo is **template-driven, NOT open-prompt**: pick a themed template ("Bath time", "The Photoshoot", "Sleepy"…), each shown as a finished **themed multi-frame wall of AI-stylized results**, with a **"Create"** button. Flow = pick theme → upload photo → AI stylizes into that theme → presented as a ready wall set. Also a separate silo.
 **For Latenca:** a **guided/templated** generate path (pick a style/theme → generate) is friendlier than a raw prompt box, and fits the unified flow — but it must live *inside* the one flow, not as a walled subdomain.
 
-## Mixtiles teardown — status: essentially COMPLETE
-Covered: onboarding/identity, full menu/IA, ready-made-walls + configurator, curated collection, AI (photo-to-art). Remaining minor: `/photos` single-upload builder detail; cart/checkout + account+payment method (does everything share ONE cart? — verify in a checkout pass). Net architecture picture is clear: **many separate silos, one they never unify.**
+## The 4 entry paths — how each manages size/frame/material (verified live 2026-07-24)
+Artur's question: each path configures size/frame/material differently — *why, and can we unify?* Drilled all four live (past the `/getstarted` gate — Artur supplied name/email, Claude did not).
+
+| Path | Unit | Entry | Builder used | Size lives… | Layout |
+|---|---|---|---|---|---|
+| **Frame Your Photos** `/photos` | your photos → tiles | upload-first | **Tile builder** | **per-tile** (+ Bulk Edit) | loose grid, add tiles freely |
+| **Art Collection** `/collection/browse` | curated art | **select many → Next** | **funnels into the SAME `/photos` tile builder** | per-tile (+ Bulk) | loose grid |
+| **Gallery Walls** `/browse` → `/photo-walls` | a wall = product | browse, filter S/M/L, real cm | **Wall configurator** (separate) | **wall-level** (S/M/L) | fixed curated layout, slot-fill |
+| **Pet Portraits** `/photo-to-art` | AI art in a theme | **theme-first** → Create → upload → AI | (→ tile builder after gen) | after generation | preset theme |
+
+**Tile builder (`/photos`) — verified controls:** a control bar **Frame · Size · Effect · Border** each acting **per-tile**, plus **Bulk Edit** (apply to all). **Size options (real cm, priced "each"):** 21×21 $19 · 32×32 $55 · 50×50 $125 (square) · 21×28 / 32×42 / 50×69 (portrait, $33/$55/$125) · 28×21 / 42×32 / 69×50 (landscape). So size = **3 orientations × 3 scales**, data-driven, per-tile.
+
+**THE finding — Mixtiles runs TWO OPPOSITE freedom models in one company:**
+- **Tile builder:** loose grid, size/frame/border **per-tile** → max freedom, but **a nice composition is NOT guaranteed** (easy to look messy).
+- **Wall configurator:** curated fixed layout, config **wall-level** → always looks good, but **zero arrangement freedom**, size only S/M/L.
+- **Neither offers "curated layout + reasonable per-piece control."** That gap = **exactly Latenca's "medium freedom"** (curated layouts per N *and* per-slot art/material/frame). Validates Artur's medium-freedom call.
+
+**Why the paths differ:** historical silo accretion (each product line built separately: photos → walls → AI → curated → kids/places subdomains), NOT a domain requirement. The domain unifies cleanly under **{one wall object · source-agnostic slot · one configurator}**; paths differ only by (a) which source fills the slots and (b) start-blank vs start-from-preset-layout. → this is the concrete evidence behind `unified-flow-architecture.md`.
+
+## Mixtiles teardown — status: COMPLETE (4 paths + configurators verified)
+Covered: onboarding/identity, full menu/IA, ready-made-walls + configurator, curated collection, AI (photo-to-art), **and the 4-path size/frame/material management (above)**. Remaining minor: cart/checkout + payment method (does everything share ONE cart? — verify in a checkout pass). Net picture: **many separate silos + two opposite builders, never unified.**
 
 ## Next sources
 Same angles on **Displate** (catalog art marketplace — size/material/frame, filters, checkout) and **iamfy.co** (personalized art) + **best-2026** unified-flow research. Then synthesize → `docs/decisions/unified-flow-architecture.md`.
