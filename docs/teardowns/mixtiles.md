@@ -34,6 +34,24 @@ Account: **"Login or Sign Up"** in the menu, framed *"Sign up to save your progr
 
 **Latenca opportunity:** one **unified goal-router** — the customer states intent (I have a photo / build a wall / generate AI art / browse curated / it's a gift) and is led through *one coherent system* to the cart, with the wall-builder as the shared canvas and the advisor as the guide. North-star: `docs/decisions/unified-flow-architecture.md`.
 
+## Ready-Made Walls + wall-builder / configurator (drilled — the signature)
+`/browse` = **"Gallery Walls"**: pre-designed wall SETS as products, filter by size (Small/Medium/Large), each card shown **in-room**, "BEST SELLER" badge, "From US$X" with strikethrough (discounted), dimensions (e.g. 122cm×79cm). **The wall composition IS the product.**
+
+Wall detail (`/photo-walls/<slug>`) = the **configurator**:
+- **Left:** the layout previewed **in the room** (empty frames in position) + **Zoom** + edit (pencil/ruler) button.
+- **Right:** config panel — **tabs `Frame | Border | Effect | Photos(7)`**; Frame tab = swatch grid (Frameless / Black selected / White / Oak +$21 / Wide Black +$42 / Wide Walnut +$42 / Earthy Blend +$21 / Harmony Mix +$12…), each a mini-preview + **price delta**. Set price with strikethrough.
+- **CTA: "Add 7 Photos"** — the layout defines the **slot count**; you fill the slots.
+
+Patterns to reuse: wall = **N-slot product template** (sold by size, discounted); **tabbed config dimensions with swatch options + price deltas**; **in-room preview**; **slot-fill CTA**.
+
+**★ Convergence insight for Latenca:** Mixtiles's "Add 7 Photos" is single-source (your photos). **Our unification point = the slot-fill:** a Latenca layout slot should accept **any source — curated art / AI-generated / uploaded photo** — so all entry goals meet at the shared wall canvas. That is the seam that turns Mixtiles's silos into one flow. → `docs/decisions/unified-flow-architecture.md`.
+
+## Silos still to drill (Mixtiles)
+- **`/photos`** — upload → frame (single-tile path + builder).
+- **`/photo-to-art`** — photo→AI/stylized (their "AI generation" silo; maps to our generate goal).
+- **`/collection/home`** — curated Art Collection browse (maps to our curated core).
+- Cart / checkout / account+payment method from each path (does everything share one cart?).
+
 ## Nice patterns worth borrowing
 - **Intent segmentation first** ("For myself / For someone else") — cheap, engaging, personalizes the path (gift vs self). Good fit for our AI advisor entry.
 - **Single-CTA, emotional, distraction-free** entry; conversational one-question-per-screen onboarding (low cognitive load).

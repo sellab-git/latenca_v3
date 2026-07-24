@@ -8,7 +8,9 @@ Competitors fragment "creating wall art" into **disconnected silos** — each go
 ## The goal (Latenca)
 **ONE logical system** where the customer's **starting goal** — whatever it is — is routed through a **single coherent, guided flow to the cart**. No "go here to build a wall, there to upload a photo, elsewhere to generate AI art." Everything is arranged so the flow works for **every entry case** and they all reach the same cart/checkout.
 
-## Entry goals to unify (jobs-to-be-done — draft, refine from teardowns)
+## Entry goals to unify (jobs-to-be-done)
+> **PRELIMINARY & OPEN — not a closed list** (Artur). These are candidate customer intents to seed thinking; discover and refine the real set from teardowns + best-2026 research + real customer language. Expect additions/merges.
+
 - **"I want curated AI art"** — browse Latenca's curated collection (our core).
 - **"I want to generate art"** — AI generation, guided.
 - **"I have a photo"** — upload → frame / canvas / stylize.
