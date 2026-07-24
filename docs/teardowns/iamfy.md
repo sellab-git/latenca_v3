@@ -23,5 +23,22 @@ Persistent top-nav: **Shop · Style · Room · Trends · Gallery Walls · Frames
 - Deeper **wall-builder / slot-fill** (Mixtiles-grade) where advisor boards, curated art, generated art, and uploads all land.
 - The advisor as **connective tissue between goals + into the wall + to cart**, not just a recommender.
 
+## Advisor flow — DRILLED live (2026-07-24, typed a real brief + added a pick)
+Drove `/a/advisor/discover/...`: greeting *"Tell me where you're hanging, and I'll start composing in the wall canvas. The wall fills in as we talk."* Typed brief *"Calm bedroom, warm neutrals, above the bed — I like abstract shapes"* → submit spawns a fresh advisor session.
+
+**What the AI actually returned:**
+- **Extracted context chip** `ROOM: Bedroom`; **named the curation** "Soft Neutral Abstractions".
+- Conversational line + **ADVISOR'S PICK** (one hero: *Neutral Shapes Abstract No 5* + rationale *"Clean minimalist lines anchor the gallery with a serene aesthetic"*) then **~12 ranked pieces**, MANY with a **one-line per-piece rationale** (why it fits).
+- **Refine quick-chips** incl. a **negative**: "More by Cartissi", "Organic Shapes Focus", "Minimalist Geometry", "Not quite neutral enough".
+- **`+ Add` → SHORTLIST 0→1; the WALL stayed empty** ("A wall, waiting"). Also offers **AR room-photo upload**.
+
+**★ THE weakness (verified, not assumed):** despite the "wall composes as we talk" promise, **the wall never composes** — the advisor delivers an **annotated recommendation list + a shortlist**, not a taking-shape wall. It reads like search-results-with-commentary. Fragmented saving model too (Shortlist vs Curations vs For You/REC = 3 overlapping buckets).
+
+**TAKE (~20%):** per-piece rationale ("why this piece" = advisor-as-designer) · Advisor's-Pick hero hierarchy (not a flat list) · visible extracted context chips from NL · refine quick-chips incl. a negative · named curation. Every turn ends in a concrete addable output.
+
+**REJECT (~80%):** the wall-never-composes gap · AR room-photo preview (already out — D-021/D-033) · 3-bucket saving model · long scrolly 12-piece list (choice overload, opposite of "sell confidence").
+
+**★ Latenca's edge, sharpened:** the advisor's picks must **LAND in the curated wall layout — the wall visibly composes** (hero slot first, supporting next), each placed piece carries its "why", refine by **swapping within the taking-shape wall**. We deliver the composition Fy! only promises. Advisor = one persistent panel (D-046), output = **a wall taking shape, not a list**; deterministic ranking, grounded in real product data. Feeds GAP #3 (advisor proposal surface) in `reconciliation-with-18.md`.
+
 ## Still to map
-Fy! advisor output ("Get my boards" result), PDP (pickers/frames), cart/checkout + identity/payment method. Then **best-2026 research** (advisor-commerce, guided configurators) → synthesize the definitive architecture.
+Fy! PDP (pickers/frames), cart/checkout + identity/payment method.
