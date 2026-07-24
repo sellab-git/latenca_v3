@@ -49,7 +49,9 @@ Drove `/a/advisor/discover/...`: greeting *"Tell me where you're hanging, and I'
 - **★ Validates our size model:** set PDP = **wall-level Size (scales all) + per-piece Frame/Border** — exactly our "designed wall = wall-scale sizing, per-piece material/frame" rule.
 - The advisor wall and the shop share **ONE cart** (advisor pieces showed as cart count 6 on shop pages).
 
-**Still to verify (areas B–G, lower priority now the core is mapped):** Style Quiz on-ramp · "Try a brief" · room upload/AR flow · what creates a **Curation** (stayed 0) · single-artwork **PDP** pickers · **cart → checkout → identity/payment method** · mobile · empty/error states.
+**Cart → checkout → identity (verified — validates our auth stance):** cart CTA = **"Checkout securely"**; sign-in is **optional** ("Have a saved cart? Sign in to restore it"). Checkout = **Shopify hosted, guest-first**: Express (Shop Pay / PayPal / Klarna), then **email or phone** (+ optional "Sign in", marketing opt-in), then delivery (country / first name *optional* / last name / address / city / postcode). **`forcedAccount = false`** — no account required, identity = just an email at the end. → validates `auth-onboarding.md`: **guest-first + own checkout + express wallets**, identity at checkout only.
+
+**Still to verify (genuinely lower value — diminishing returns):** Style Quiz on-ramp · "Try a brief" · room upload/AR (we reject AR anyway) · what creates a **Curation** (stayed 0) · single-artwork PDP pickers (set PDP already showed the picker model) · mobile · empty/error states.
 
 ## Still to map
 Fy! PDP (pickers/frames), cart/checkout + identity/payment method.
