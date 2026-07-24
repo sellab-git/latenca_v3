@@ -34,6 +34,21 @@ Folder 20 ma dziś tylko design base (`_shell` + 4 ekrany pilota) i shadcn — z
 - Materiały: pełny zestaw Gelato (papier/canvas/drewno/metal/akryl/pianka) — ale rozmiary z realnego katalogu, nie hardcode.
 - Marketplace layer z Printly (Stripe Connect, royalty) — pomijamy.
 
+## ★ Scale & future-proofing — OBOWIĄZKOWE szwy (zwalidowane 2026)
+Pełne uzasadnienie + źródła: **`docs/decisions/scale-and-future-proofing.md`**. Werdykt 5 badań: plan jest ~85% scale-ready; fundament (Supabase/Vercel/Stripe/Gelato) nie wymusza przepisywania. Faza 1 zostaje prosta, ale **musi** zaszyć poniższe szwy (skalowanie = potem dokładanie, nie rewrite). **1 realna wada do naprawy + ~20 tanich szwów.**
+
+**⛔ Wada rewrite-class (naprawiona w tym planie):** fulfillment NIE inline w webhooku → **enqueue-then-fulfill** (tabela `fulfillment_jobs` = outbox+DLQ, insert w tej samej transakcji co `markOrderPaid`; webhook zwraca 200 po 2 szybkich zapisach; **worker cron** drenuje `FOR UPDATE SKIP LOCKED` z backoffem; swap na Vercel Queues potem). → Unit 10 przebudowany + **nowy Unit 10b (worker)**.
+
+**Szwy per Unit (poza tym, co już w Unitach):**
+- **Unit 1:** `cacheComponents: true` w `next.config.ts` od dnia 1 · DB tylko przez **transaction pooler (6543)** (`DATABASE_URL`), `DIRECT_URL`=5432 tylko migracje · split `dbRead`/`dbWrite` w helperze (pod read-replicas).
+- **Unit 2 (migracje):** `orders`/`order_items` **partycjonowane RANGE po miesiącu** od dnia 1 · **indeksy keyset `(sort_col,id)`** + FTS GIN · **szablon RLS** (`(select auth.uid())`, `TO authenticated`/`anon`, indeks predykatu; `get_advisors` gate) · **`fulfillment_jobs`** (outbox/DLQ) · **`search_index_outbox`** · **dwa rekordy per grafika:** `print_master`{url permanent+public, format tiff/png/jpeg **nie webp**, w/h, dpi, color_space} + `web_source` · **explicit `currency`** per order/line.
+- **Unit 4/9:** cena zawsze integer minor units + **explicit `currency`** (nie zaszywać USD w semantyce).
+- **Unit 5:** czytania katalogu przez **`use cache` + `cacheTag` + serializowalne DTO** (nie wiersze ORM) · **stub `revalidateCatalog(tags)`** + chroniona route spięta z sync-jobem · **interfejs `SearchProvider`** + Phase-1 `PostgresSearchProvider` (stored `tsvector` GIN + `pg_trgm` + fasety GROUP BY, pole `facets` wypełnione) + **uśpiony `enqueueIndexSync`** + `similarTo`→NotImplemented. Cel skali: **Typesense** (nie Algolia/Elastic; Supabase nie ma ParadeDB).
+- **Unit 8 (koszyk):** **stateless client-side** (localStorage `{pod_product_uid, qty}`, **nigdy ceny**); serwer re-waliduje cenę+wysyłkę quote'em Gelato przy checkoutcie; **BEZ tabeli `guest_carts`**; order = `email` + nullable `user_id`.
+- **Unit 11 (assety):** interfejsy **`AssetStore`** (S3-shaped; Phase-1 `SupabaseAssetStore`) + **`ImageDelivery.derivativeUrl()`** (jeden choke-point na web-obrazy; Phase-1 custom Next `loader`; **NIE domyślny `<Image>` optimizer Vercela**) + **`ingest()` w kształcie enqueue** (inline teraz; content-addressed sha256; dead-letter state). Cel skali: **R2 + Cloudflare Images**; Supabase Storage tylko user-private.
+
+**Zdecydowane cele skali (nie re-litygować):** search=Typesense · storage/CDN=Cloudflare R2 + Images · queue=Vercel Cron→worker (potem Vercel Queues) · semantic=pgvector/Typesense · multi-currency=Stripe Adaptive Pricing. **Nic z tego NIE budujemy w Fazie 1** — tylko szwy, żeby było dokładalne.
+
 ## Kontekst i research
 
 ### Relevantny kod i wzorce (do naśladowania / portu)
@@ -74,7 +89,7 @@ Folder 20 ma dziś tylko design base (`_shell` + 4 ekrany pilota) i shadcn — z
 ### Odroczone do implementacji
 - Dokładne UID-y Gelato per (materiał×rozmiar) — harvestować skryptem z katalogu Gelato (jak Pawtraits `scripts/gelato-*.ts`), wartości nieznane do dotknięcia API.
 - Finalne stałe Pricing Engine (margin/returns/marketing/fixed %) — kalibrować z realnych kosztów; start od defaultów Motowalls (Stripe 3.5/zwroty 5/marketing 10/fixed 10, marża 30/20%).
-- Czy koszyk gość = anonimowa sesja Supabase czy klient-side cookie — rozstrzygnąć przy implementacji cart (Unit 8).
+- ✅ Koszyk gościa = **stateless client-side (localStorage)**, NIE anonimowa sesja Supabase — rozstrzygnięte scale-research (§scale, Unit 8).
 - Rehost obrazów CC0 (muzealny CDN blokuje `next/image`) — Storage bucket vs zewnętrzny CDN.
 
 ## Implementation Units
@@ -260,11 +275,11 @@ Pogrupowane w pod-fazy: **A. Fundament & dane** · **B. POD & pricing** · **C. 
 **Pliki:**
 - Stwórz: `src/lib/cart/cart.ts` (model koszyka; suma serwerowo z variant/pricing; centy)
 - Stwórz: `src/app/(shop)/cart/page.tsx` (lista pozycji, edycja/usuń, suma)
-- Stwórz: `src/lib/cart/store.ts` (stan — decyzja anon-session vs cookie odroczona)
+- Stwórz: `src/lib/cart/store.ts` (**stateless client-side** — localStorage, trzyma TYLKO `{pod_product_uid, qty}`, NIGDY cen; **BEZ tabeli `guest_carts`**)
 - Test (unit): `src/lib/cart/cart.test.ts`
 **Delegate to:** feature-builder-fullstack
 **Skills in play:** tailwind-react-guidelines, ux-ui-guidelines, supabase-dev-guidelines, security
-**Podejście:** Suma nigdy z klienta. Multi-item (odwrotnie niż single-line Pawtraits). Guest (bez konta). Cross-sell „frequently bought together" opcjonalnie (jedna kafla, nie spam).
+**Podejście:** ⭐ **Stateless client cart** (scale-and-future-proofing.md §E): localStorage `{pod_product_uid, qty}`, zero wierszy DB per gość (brak bloatu na skali). **Suma i wysyłka re-walidowane serwerowo** (variant/pricing + quote Gelato) przy renderze/checkoutcie — koszyk trustless-by-design (klient nie trzyma cen). Multi-item. Order dostaje `email` + nullable `user_id` (konwersja na konto potem back-fill po emailu).
 **Scenariusze testowe:**
 - [Unit] Suma koszyka = Σ cen wariantów serwerowo; dodanie/usunięcie/zmiana ilości przelicza.
 - [E2E] Dodaj 2 różne produkty → koszyk pokazuje 2 pozycje + poprawną sumę; usuń jedną → suma maleje. 1440/390.
@@ -299,29 +314,51 @@ Pogrupowane w pod-fazy: **A. Fundament & dane** · **B. POD & pricing** · **C. 
 - Grep: `create-session.ts` zawiera `server-only`, nie `use server` (`rg 'use server' src/lib/checkout` = brak).
 - `npx tsc --noEmit` przechodzi.
 
-- [ ] **Unit 10: Fulfillment — Stripe webhook + Gelato order + Gelato webhook**
+- [ ] **Unit 10: Stripe webhook — ENQUEUE (nie fulfill inline) + Gelato webhook**
 
-**Cel:** Fulfillment na paid-webhooku (idempotentny, race-safe) → order Gelato + capture kosztów; Gelato webhook (status/tracking).
+**Cel:** Paid-webhook tylko weryfikuje → zapisuje/enqueue → 200 (wzorzec Stripe). Fulfillment robi worker (Unit 10b). Gelato webhook = status/tracking.
 **Wymagania:** R7.
-**Zależności:** Unit 9, Unit 3.
+**Zależności:** Unit 9, Unit 2 (`fulfillment_jobs`).
 **Pliki:**
-- Stwórz: `src/app/api/webhooks/stripe/route.ts` (`runtime nodejs`, raw body, `constructEvent`; idempotencja `stripe_webhook_events(event_id PK) ON CONFLICT`; race-guard `{count:'exact'}`→500 retry; write-then-email; `podProvider.createOrder` w try/catch → DLQ status)
+- Stwórz: `src/app/api/webhooks/stripe/route.ts` (`runtime nodejs`, raw body, `constructEvent`; idempotencja `stripe_webhook_events(event_id PK) ON CONFLICT`; **w JEDNEJ transakcji: `markOrderPaid` + insert `fulfillment_jobs(status=pending)` = outbox**; race-guard `{count:'exact'}`→500 retry; write-then-email; **BEZ `createOrder` inline**)
 - Stwórz: `src/app/api/webhooks/gelato/[secret]/route.ts` (secret-path auth; idempotencja `gelato_webhook_events`; status map; once-only shipped email guard; write real `order_costs`)
 - Stwórz: `src/lib/webhook-idempotency.ts` (port Pawtraits) — jeśli nie z Unit 1
 - Test (unit): `src/lib/webhook-idempotency.test.ts`, `src/app/api/webhooks/stripe/route.test.ts`
 **Delegate to:** feature-builder-data
 **Skills in play:** supabase-dev-guidelines, security, sentry-integration, payments, pod-fulfillment
-**Podejście:** Fulfillment na webhooku nie redirect. Gelato NIE podpisuje → secret path. `orderReferenceId` NIE do dedup Gelato → dedup po zapisanym `vendor_order_id`. Zwróć 200 na błędy logiki (store `processing_error`), 500 tylko na race → Stripe retry.
-**Notatka wykonawcza:** Test-first na idempotencji (duplikat event → ack, brak podwójnego ordera) i race-guard.
-**Wzorce do naśladowania:** Motowalls `app/api/stripe/webhook/route.ts` + `app/api/gelato/webhook/[secret]/route.ts`; Printly `app/api/webhooks/stripe/route.ts`; Pawtraits `lib/webhook-idempotency.ts`.
+**Podejście:** ⭐ **enqueue-then-fulfill** (scale-and-future-proofing.md): webhook = verify→persist/enqueue→2xx, zero wolnych wywołań zewnętrznych. Order-paid + job w **jednej transakcji** (zamyka dual-write). Gelato NIE podpisuje → secret path. `orderReferenceId` NIE do dedup → dedup po `vendor_order_id`. 200 na błędy logiki (`processing_error`), 500 tylko na race.
+**Notatka wykonawcza:** Test-first na idempotencji (duplikat event → ack, brak podwójnego joba) + transakcyjności outboxa (paid ⇒ job zawsze istnieje).
+**Wzorce do naśladowania:** Motowalls/Printly webhooki (idempotencja) — ale **przenieś `createOrder` z webhooka do workera** (poprawka scale); Pawtraits `lib/webhook-idempotency.ts`.
 **Scenariusze testowe:**
-- [Unit] Duplikat `event.id` → `ON CONFLICT` → 200 ack, brak drugiego ordera Gelato.
+- [Unit] Duplikat `event.id` → `ON CONFLICT` → 200 ack, brak drugiego joba.
+- [Unit] `markOrderPaid` i insert `fulfillment_jobs` są atomowe (rollback obu przy błędzie) → nigdy paid-bez-joba.
 - [Unit] Webhook przed commitem ordera (`count=0`) → 500 (Stripe retry).
-- [Unit] Gelato status → wewnętrzny enum; shipped email tylko raz.
 **Weryfikacja:**
-- `pnpm vitest run` (webhooki + idempotencja) zielone.
+- `pnpm vitest run` (webhooki + idempotencja + transakcyjność) zielone.
+- Grep: brak `createOrder` w `webhooks/stripe/route.ts` (`rg 'createOrder' src/app/api/webhooks/stripe` = brak) — fulfillment NIE inline.
+
+- [ ] **Unit 10b: Fulfillment worker — drenaż `fulfillment_jobs` → Gelato order + capture kosztów**
+
+**Cel:** Worker cron drenuje kolejkę fulfillmentu, tworzy order Gelato (idempotentnie), zapisuje realne koszty; backoff + failed state.
+**Wymagania:** R7.
+**Zależności:** Unit 10, Unit 3.
+**Pliki:**
+- Stwórz: `src/app/api/cron/fulfill/route.ts` (Bearer CRON_SECRET; `SELECT … WHERE status='pending' AND next_attempt_at<=now() FOR UPDATE SKIP LOCKED LIMIT n`; `podProvider.createOrder` idempotentnie po `vendor_order_id`; sukces→`done`+`order_costs`; błąd→backoff `attempts++`/`next_attempt_at`; trwały błąd→`failed`)
+- Stwórz: `vercel.json` LUB config crona (`/api/cron/fulfill` co ~1 min; `/api/cron/sync-costs` z Unit 4)
+- Test (unit): `src/app/api/cron/fulfill/route.test.ts`
+**Delegate to:** feature-builder-data
+**Skills in play:** supabase-dev-guidelines, security, sentry-integration, pod-fulfillment, payments
+**Podejście:** ⭐ Portable worker (Vercel Cron→route polling) — swap na Vercel Queues potem = zmiana wewnątrz workera. `SKIP LOCKED` = bezpieczna współbieżność. Idempotencja: przed `createOrder` sprawdź zapisany `vendor_order_id`.
+**Notatka wykonawcza:** Test-first na idempotencji workera (dwa przebiegi na tym samym jobie → jeden order Gelato) i backoffie.
+**Wzorce do naśladowania:** `scale-and-future-proofing.md` §E; Render „Next.js background jobs + Postgres"; Motowalls `app/api/cron/*` (Bearer auth).
+**Scenariusze testowe:**
+- [Unit] Job `pending` → worker tworzy order Gelato, ustawia `done`, zapisuje `order_costs`.
+- [Unit] Dwa równoległe przebiegi (`SKIP LOCKED`) → jeden order (brak duplikatu).
+- [Unit] Błąd Gelato → `attempts++`, `next_attempt_at` w przyszłości; po N prób → `failed` (nie 500 w nieskończoność).
+**Weryfikacja:**
+- `pnpm vitest run src/app/api/cron/fulfill` zielone.
 - `npx tsc --noEmit` przechodzi.
-- [Operator] E2E sandbox: Stripe paid → order Gelato draft utworzony → shipped webhook aktualizuje status (przy secie env).
+- [Operator] E2E sandbox: Stripe paid → job `pending` → cron → order Gelato draft → `done` + `order_costs`; shipped webhook aktualizuje status.
 
 ### E. Treść
 
