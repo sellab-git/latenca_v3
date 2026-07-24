@@ -40,8 +40,8 @@ Run it: `pnpm dev` → http://localhost:3000/pilot/home (also /styles, /canvas, 
 - `docs/decisions/auth-onboarding.md` — guest-first; account method OPEN (magic-link excluded, memory `no-magic-link-auth`).
 
 **[← RESUME HERE] Fresh flow + screens design pass**, on `_shell`, using 18-as-spec + teardowns + best-2026 as INPUTS (not copies):
-1. **Decide D-047** (the fork): single artwork vs **variable-N wall**. Working proposal (Artur: "makes sense, but re-think fresh, don't copy 18"): **variable-N — "the product page IS the wall"** (single = N=1); enter via catalogue/search OR advisor, both land on the same wall-with-presets surface; advisor = one persistent panel (D-046), never a gate (D-022).
-2. **Design the unified flow + core screens fresh** (catalogue/landing · product+advisor+wall · cart) under current decisions + the Ideogram/shadcn design system — via `dev-brainstorm` → `dev-plan`.
+1. ✅ **D-047 DECIDED (2026-07-24): variable-N — "the product page IS the wall"** (single artwork = N=1, N up to 12 on a preset wall). Enter via catalogue/search OR advisor, both land on the same wall-with-presets surface; advisor = one persistent panel (D-046), never a gate (D-022). Rationale: sets are the whole margin (each extra piece ships ~€0.29), so the wall must be first-class.
+2. **[NEXT] Design the unified flow + core screens fresh** (catalogue/landing · product+advisor+wall · cart) under current decisions + the Ideogram/shadcn design system — via `dev-brainstorm` → `dev-plan`. Resolve entry/chooser mechanics + advisor proposal surface inside this pass.
 3. **Then build**, day-1 with the **data model** (ARTIST/ARTWORK/DERIVATIVE/VARIANT/SET-WALL/ORDER, `source`+`collection`) + the audit **D1–D11 commerce work-order** (must-build Catalog Engine, live Gelato shipping, Stripe Tax, deterministic ranking). Keep the **generation seam** (D-020 vendor abstraction) for the future path (Mixtiles-style templated / full engine) — not an MVP feature.
 
 MVP boundary (D-030): shop spine + advisor; advisor = the only AI moment. Recolor (warm/gallery) is the last step.

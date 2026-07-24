@@ -45,7 +45,7 @@
 - ⚠️ The 4 `Analizy/` teardowns frame "in-your-room visualization/inpainting" as the #1 wedge — **contradicts D-021/D-031/D-033 + clarification (b); ignore that rec.** Mine them only for the OTHER patterns: Fy! (curator-not-generator, per-piece rationale, no-login fingerprint sessions, every turn ends in a concrete output) · Mixtiles (neutral-mockup composition, live per-tile pricing, ready-made Gallery Walls that fill slots without dragging) · Displate (pricing-rules engine, sets, quantity discounts) · Ideogram (deferred generation rung — steal Magic-Prompt/seed only if/when generation is added). *(20's own fresh teardowns + best-2026 add: OpenAI-killed-Instant-Checkout → guest-first+own-checkout; Displate PDP pickers; DROOL all-to-cart.)*
 
 ## GAPS — open forks to decide in folder 20
-1. **D-047 (THE fork): single artwork vs variable-N wall as the MVP unit.** Drives SCREEN_MAP + the SET/WALL cart engine. Artur's clarification (c) = entry/flow open → **decide this first.**
+1. **D-047 — ✅ DECIDED 2026-07-24: variable-N wall is the MVP unit.** "The product page IS the wall" — one surface handles N=1 (single artwork) through N=12 (preset wall layout); single piece = N=1, not a separate product. Enter via catalogue/search OR advisor, both land on the same wall-with-presets surface; advisor = one persistent panel (D-046), never a gate (D-022). Drives SCREEN_MAP + the SET/WALL cart engine. Rationale: 18's economics (each extra piece ships ~€0.29 → sets are the whole margin) require the wall to be first-class, not a bolt-on. Design fresh on `_shell` — do NOT copy 18's mockups.
 2. **Entry / chooser mechanics** — 4-approach chooser vs "product-page-is-the-wall" vs catalogue-first. Principle kept (never a gate, D-022); surface open. *(Artur asked me to propose here — open items #3/#4.)*
 3. **Advisor proposal surface** — flat wall + presets; express "surprising-yet-inevitable" via curation/composition, not room compositing.
 4. **Validation never run** — the Wizard-of-Oz test (does opinion-first land with strangers) was proposed, never recorded as run.
@@ -53,8 +53,8 @@
 6. No home yet for: B2B (parked as separate product), gifts, reverse-image "more like this", returns/account/reorder.
 
 ## Next
-- Fix CLAUDE.md "D1–D11" wording.
-- Tackle **D-047 + entry/advisor surface** (Artur's open items) → a concrete proposal grounded in USER-INTENTS §8 + the wall-presets model + D-022/D-046.
+- ✅ D-047 decided (variable-N, "product page IS the wall") — 2026-07-24.
+- **Now: fresh flow + core-screens design pass** (catalogue/landing · product+advisor+wall · cart) via `dev-brainstorm` → `dev-plan`, on `_shell`, under D-047 + D-022/D-046. Resolve remaining GAP forks #2 (entry/chooser mechanics) + #3 (advisor proposal surface) inside this pass.
 - Then `dev-plan` on the BRING list + the data model + audit D1–D11 backend work-order.
 
 ## Related
