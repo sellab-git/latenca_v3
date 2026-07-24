@@ -44,3 +44,7 @@ next-env.d.ts
 .playwright-mcp/
 /local-*.png
 /snap-*.md
+
+# competitor captures + local verification shots — never commit
+/ideogram-*.png
+/*.png
