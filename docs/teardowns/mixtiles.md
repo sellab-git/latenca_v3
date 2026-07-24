@@ -46,11 +46,18 @@ Patterns to reuse: wall = **N-slot product template** (sold by size, discounted)
 
 **★ Convergence insight for Latenca:** Mixtiles's "Add 7 Photos" is single-source (your photos). **Our unification point = the slot-fill:** a Latenca layout slot should accept **any source — curated art / AI-generated / uploaded photo** — so all entry goals meet at the shared wall canvas. That is the seam that turns Mixtiles's silos into one flow. → `docs/decisions/unified-flow-architecture.md`.
 
-## Silos still to drill (Mixtiles)
-- **`/photos`** — upload → frame (single-tile path + builder).
-- **`/photo-to-art`** — photo→AI/stylized (their "AI generation" silo; maps to our generate goal).
-- **`/collection/home`** — curated Art Collection browse (maps to our curated core).
-- Cart / checkout / account+payment method from each path (does everything share one cart?).
+## Curated Art Collection (`/collection/home`) — drilled
+"Decorate Your Walls in Minutes — Easily frame & hang the art you love." A gallery of **curated art pieces shown pre-framed** (various frame styles) → CTA **"Browse Art"**. Yet another **separate landing** from `/browse` (gallery walls) and `/photos` (upload). Maps to Latenca's curated core. Simple: browse curated → frame → hang.
+
+## AI generation (`/photo-to-art`, "Pet Portraits") — drilled
+Their "AI" silo is **template-driven, NOT open-prompt**: pick a themed template ("Bath time", "The Photoshoot", "Sleepy"…), each shown as a finished **themed multi-frame wall of AI-stylized results**, with a **"Create"** button. Flow = pick theme → upload photo → AI stylizes into that theme → presented as a ready wall set. Also a separate silo.
+**For Latenca:** a **guided/templated** generate path (pick a style/theme → generate) is friendlier than a raw prompt box, and fits the unified flow — but it must live *inside* the one flow, not as a walled subdomain.
+
+## Mixtiles teardown — status: essentially COMPLETE
+Covered: onboarding/identity, full menu/IA, ready-made-walls + configurator, curated collection, AI (photo-to-art). Remaining minor: `/photos` single-upload builder detail; cart/checkout + account+payment method (does everything share ONE cart? — verify in a checkout pass). Net architecture picture is clear: **many separate silos, one they never unify.**
+
+## Next sources
+Same angles on **Displate** (catalog art marketplace — size/material/frame, filters, checkout) and **iamfy.co** (personalized art) + **best-2026** unified-flow research. Then synthesize → `docs/decisions/unified-flow-architecture.md`.
 
 ## Nice patterns worth borrowing
 - **Intent segmentation first** ("For myself / For someone else") — cheap, engaging, personalizes the path (gift vs self). Good fit for our AI advisor entry.
