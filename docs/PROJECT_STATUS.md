@@ -7,7 +7,9 @@
 ## What Latenca is
 Curated AI wall-art shop with an AI advisor. Solo founder (Artur), non-developer — communicate in **Polish**; code/UI/commits in **English**; UI/prices English/USD/global.
 
-## Where we are now — Phase A (Ideogram 1:1) essentially DONE
+## Pilot & design base (Phase A — done; see "Immediate plan" below for current status)
+> Current status/resume-point is in **"Immediate plan"** further down. This section records the Phase-A pilot + `_shell`.
+
 Four screens rebuilt 1:1 on shadcn, verified live via Playwright (1440 + 390, clean console, tsc+eslint 0):
 - **image-detail** `src/app/pilot/image-detail/page.tsx` — static layout (6 breakpoints + dark) **and** interactions: right panel is a full-height card (actions pinned bottom), `•••` menu with icons + submenus, rich account menu with a segmented Light/Dark/Auto, split account+bell.
 - **Home** `/pilot/home` — hero + composer + filter row + masonry feed (FeedCard = ProductCard seed).
@@ -30,16 +32,21 @@ Run it: `pnpm dev` → http://localhost:3000/pilot/home (also /styles, /canvas, 
 5. **Recolor + remap — LATER, separate steps.**
 
 ## Immediate plan
-**Phase A (Ideogram 1:1) — DONE.** Four screens + design base shipped and pushed.
+**DONE so far:** Phase A (Ideogram 1:1 pilot + `_shell` design base) · the `.claude/` **foundation** (starter adapted to our stack — see `docs/claude-foundation-plan.md`, skills `next-guidelines`/`payments`/`pod-fulfillment`, Supabase-SSR) · **Phase B** (live teardowns Mixtiles/Displate/iamfy → `docs/teardowns/`, best-2026 research, architecture v1) · **reconciliation with `18. Latenca`** (migration map).
 
-**[← RESUME HERE] Phase B — competitive teardown → commerce spine.** Ideogram gave us the skin; a shop needs the parts it doesn't have. Next:
-1. **Teardown Mixtiles + Displate + iamfy.co** (Playwright, same pipeline) — 3 sources, each checked for different angles. Map entry paths, browse/filter, product detail, wall builder, cart/checkout, identity/auth moment, micro-interactions → matrix "who solves X best". **Standing rule:** named examples are starting points — for each problem also research best-in-class 2026 patterns in real sources, don't anchor on the three (see memory `research-best-2026-not-anchor`). Findings to `docs/teardowns/` (competitor screenshots stay local, never committed).
-2. **Best-of synthesis + our IA/funnel** — per screen, pick the best pattern + where the AI advisor injects. Anchor to `18. Latenca` decisions D1–D11.
-3. **Build the commerce blocks** Ideogram lacks (ProductCard-with-buy, size/frame/material picker, wall-builder canvas, cart line, checkout steps) into `_shell`/screens.
+**Product direction is now settled at the strategy level** (read these before any build):
+- `docs/decisions/reconciliation-with-18.md` — **the migration map + GOVERNING RULE.** 18's strategy/decisions (D-001…D-051 + commerce D1–D11), data model, pricing, commerce logic **transfer as SPEC**; 18's **flow/screens/UX/mockups are IDEAS only — re-think fresh** on our Ideogram/shadcn `_shell` (memory `folder-18-is-ideas-not-copy`).
+- `docs/decisions/unified-flow-architecture.md` — v1 synthesis (reconciled down to 18's locks: NOT a generator in MVP / flat wall + presets, no AR / one flow / advisor = front door never a gate / sell confidence not choice).
+- `docs/decisions/auth-onboarding.md` — guest-first; account method OPEN (magic-link excluded, memory `no-magic-link-auth`).
 
-Small Phase-A follow-ups (optional, low priority): wire account menu to the mobile Account tab; extract account menu into its own shared component; interaction items #6–#9.
+**[← RESUME HERE] Fresh flow + screens design pass**, on `_shell`, using 18-as-spec + teardowns + best-2026 as INPUTS (not copies):
+1. **Decide D-047** (the fork): single artwork vs **variable-N wall**. Working proposal (Artur: "makes sense, but re-think fresh, don't copy 18"): **variable-N — "the product page IS the wall"** (single = N=1); enter via catalogue/search OR advisor, both land on the same wall-with-presets surface; advisor = one persistent panel (D-046), never a gate (D-022).
+2. **Design the unified flow + core screens fresh** (catalogue/landing · product+advisor+wall · cart) under current decisions + the Ideogram/shadcn design system — via `dev-brainstorm` → `dev-plan`.
+3. **Then build**, day-1 with the **data model** (ARTIST/ARTWORK/DERIVATIVE/VARIANT/SET-WALL/ORDER, `source`+`collection`) + the audit **D1–D11 commerce work-order** (must-build Catalog Engine, live Gelato shipping, Stripe Tax, deterministic ranking). Keep the **generation seam** (D-020 vendor abstraction) for the future path (Mixtiles-style templated / full engine) — not an MVP feature.
 
-Only after the system + screens exist do we **recolor** (warm/gallery) and **remap to business logic** (wall composition / slot pick / advisor chat / cart-checkout — product thinking lives in read-only `18. Latenca` + decisions D1–D11).
+MVP boundary (D-030): shop spine + advisor; advisor = the only AI moment. Recolor (warm/gallery) is the last step.
+
+Small Phase-A follow-ups (optional, low priority): wire account menu to the mobile Account tab; extract account menu into its own shared component; image-detail interaction items #6–#9.
 
 ## Locked rules
 - **shadcn = the foundation, from day one.** Never re-surface as a question.
