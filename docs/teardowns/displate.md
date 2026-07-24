@@ -53,5 +53,10 @@ The single-piece PDP is **Latenca's priority reference** (most buyers get ONE pi
 - **Even Displate — a 2M-item mature marketplace — has NO composition.** Its multi-buy driver is a **quantity discount**, not a curated wall. Reinforces: single-piece is the unit; nobody does curated layouts → our differentiator, but the single-piece path must be excellent first.
 - Cross-sell ("Frequently Bought Together") + quantity discount are the conversion levers on the single-piece path — cheaper than a composer, and where most volume is.
 
-## Still to map (lower value)
-Custom Displates (their upload-your-own path — future for us) · the browse taste-picker interstitial (noted above) · mobile · empty/error states.
+## Custom Displates (upload path) — verified live
+`/custom-displate` → **"UPLOAD YOUR IMAGE"** → `/custom-displate/uploader`. Flow = **upload → crop → pick size & finish → add to cart** (same picker/commerce spine as a normal PDP, just your own image). Two patterns worth stealing IF/when we add uploads (future — we're curated POD first):
+- **AI upscaler built into the flow** — "Photos taken with your phone should be fine… you can upscale your images within this process" (+ FAQ "How does your upscaler work"). Handles low-res user uploads → a real quality/returns safeguard for POD.
+- **Explicit rights confirmation BEFORE upload** — "By uploading, you confirm you own the necessary rights (copyright, trademark, design, personality rights)…" — legal gate for user content. Accepted formats: JPG/PNG/WEBP/AVIF.
+
+## Displate teardown — COMPLETE for our purposes
+Covered deep + verified: PDP pickers/live-price/availability/volume-discount/social-proof, cart (Edit + Frequently-Bought-Together + shipping/customs + Club upsell), guest-first own checkout, Custom Displates upload (upscaler + rights gate). Negligible remaining: browse taste-picker interstitial (noted), mobile, empty/error states.
