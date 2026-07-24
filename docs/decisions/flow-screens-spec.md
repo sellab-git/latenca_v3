@@ -132,7 +132,7 @@ No AR / room compositing · no open AI generation (advisor only; generation = fu
 - Pricing % values (margin/artist/commission) — tune from real Gelato costs (Motowalls defaults as starting point).
 - Layout presets: add N=1/2, expand count per N via the generator, add frames/materials layer to the ported engine; map 18's 9-size vocab ↔ Gelato sizes.
 - Exact auth provider set (Google/Apple/…); grid curation level; recolor palette.
-- **⚠️ AI-print quality (if A1 self-generated):** does AI art at 70×100 @300 DPI look good on paper? Never tested in prior attempts → needs an upscaler in the pipeline **+ a real ~$25 test print before relying on AI as a source.**
+- **AI-print quality (if A1 self-generated) — planned approach (Artur 2026-07-24):** solve at **ingestion** — a **quality/resolution GATE in the content-import pipeline** (only admit art that meets the DPI needed for our largest size; cf. 17's ≥3000px filter + Pawtraits' "enforce min source resolution yourself") **+ an optional upscaler** step (cf. Displate Custom). Still validate with a real ~$25 test print before leaning on AI as a source, but assume solvable.
 - **Distribution / CAC plan** — the actual survival question (strategic guardrail §0); not a build task, but must not be ignored.
 
 ## 10. Prior-art reuse — the backend is ~80% portable
