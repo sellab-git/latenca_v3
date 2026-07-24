@@ -13,6 +13,27 @@ Home (`mixtiles.com`) → single emotional hero "Photo Walls Reinvented" + one C
 
 **Implication for Latenca auth (see `docs/decisions/auth-onboarding.md`):** do NOT copy Mixtiles's upfront name+email gate as-is. Evidence still favors **guest-first, identity at checkout**. Mixtiles's engaging intent-segmentation ("who's it for" → personalize/gift path) is worth borrowing as UX *without* the early data gate — e.g. segment intent to tailor the advisor, but don't block on name/email.
 
+## Menu / IA — the fragmentation (THE core finding for Latenca)
+Full menu enumerated live. The "create" goals are **separate silos**, each its own URL — two even on **separate subdomains**:
+
+| Menu item | URL | Goal / input | Type |
+|---|---|---|---|
+| Frame Your Photos | `/photos` | upload your photos → frame | user-upload |
+| Canvas Prints | `/en-US/canvas` | your photo on canvas | user-upload (format) |
+| Pet Portraits | `/photo-to-art` | pet photo → AI/stylized art | **photo→AI** |
+| Family Portraits | `/photo-to-art/family` | family photo → art | **photo→AI** |
+| Kids Wall Art | **`kids.mixtiles.com`** | kids art | **separate subdomain** |
+| Places Art | **`places.mixtiles.com`** | map/places art | **separate subdomain** |
+| Ready Made Walls | `/browse` | pre-designed wall sets | curated wall |
+| Art Collection | `/collection/home` | browse curated art | curated browse |
+| Gift Card / For Business | `/gift`, `/for-business` | — | commerce side |
+
+Account: **"Login or Sign Up"** in the menu, framed *"Sign up to save your progress & track orders"* — **optional**, not forced. Utility: My Orders, Promo Codes, Help, Chat, email-capture field.
+
+**Diagnosis (Artur's point, confirmed):** every *goal* (upload / canvas / photo→AI / kids / places / ready-made / curated) is a **disconnected entry silo** — different URL, sometimes different subdomain, its own builder. There is **no single guided flow** that takes "what do you want?" → the right tool → wall → cart. This is the 2016-era architecture to beat.
+
+**Latenca opportunity:** one **unified goal-router** — the customer states intent (I have a photo / build a wall / generate AI art / browse curated / it's a gift) and is led through *one coherent system* to the cart, with the wall-builder as the shared canvas and the advisor as the guide. North-star: `docs/decisions/unified-flow-architecture.md`.
+
 ## Nice patterns worth borrowing
 - **Intent segmentation first** ("For myself / For someone else") — cheap, engaging, personalizes the path (gift vs self). Good fit for our AI advisor entry.
 - **Single-CTA, emotional, distraction-free** entry; conversational one-question-per-screen onboarding (low cognitive load).

@@ -30,5 +30,8 @@ OSTATNI krok: przekolorowanie palety (CSS variables w `globals.css`) w stronę c
 ## `_shell` (baza design)
 Współdzielone komponenty app-shell w `src/app/pilot/_shell/`: `AppSidebar`, `MobileNav`, `Composer`, `SegmentedControl`, `ImageActionsMenu`, hook `theme`. **Reużywaj je — grep przed autorstwem nowego UI** (reuse = reguła #1).
 
+## Unified flow architecture (north-star)
+Docelowa architektura Latenca: **jeden system**, w którym różne cele wejścia klienta (curated / generuj AI / mam zdjęcie / buduj ścianę / prezent / „doradź mi") zbiegają się w **jeden prowadzony flow do koszyka** — zamiast osobnych silosów jak u Mixtiles (osobny URL/subdomena per cel). Silosy stają się *trybami w jednym flow*, spięte doradcą AI. EXPLORING — powstaje z syntezy teardownów + best-2026. → `docs/decisions/unified-flow-architecture.md`.
+
 ## Wall-builder
 Przyszły ekran kompozycji: klient układa grafiki na ścianie i podgląda u siebie (bliżej Mixtiles niż Ideogram Canvas). Faza B.
