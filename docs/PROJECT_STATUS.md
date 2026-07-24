@@ -56,3 +56,5 @@ Only after the system + screens exist do we **recolor** (warm/gallery) and **rem
 - `src/app/pilot/image-detail/page.tsx` — the rebuilt pilot screen.
 - `src/app/globals.css` — Ideogram palette as CSS variables (the recolor target).
 - `src/components/ui/` — shadcn components (the future design-system blocks).
+- `docs/claude-foundation-plan.md` — the `.claude/` system adaptation (starter → our stack), workstreams A–F.
+- `docs/CONCEPTS.md` — domain glossary (locked decisions: POD, Stripe-abstracted; auth = OPEN). `.claude/rules/learned-patterns.md` + `docs/solutions/` — knowledge base (grows via `/dev-compound`).
