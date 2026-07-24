@@ -34,6 +34,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { AppSidebar } from "../_shell/app-sidebar";
+import { MobileNav } from "../_shell/mobile-nav";
 import { ImageActionsMenu } from "../_shell/image-actions-menu";
 
 /* ── data (placeholder) ── */
@@ -139,7 +140,7 @@ export default function HomePage() {
         <AppSidebar activeNav="Home" />
 
         <main className="flex-1 overflow-y-auto">
-          <div className="px-6 pb-16">
+          <div className="px-6 pb-24 min-[900px]:pb-16">
             {/* ── hero ── */}
             <section className="mx-auto max-w-[864px] pt-10 text-center">
               <h1 className="font-serif text-[40px] leading-[1.1] tracking-tight min-[900px]:text-[46px]">
@@ -238,6 +239,8 @@ export default function HomePage() {
             </div>
           </div>
         </main>
+
+        <MobileNav active="Home" />
       </div>
     </TooltipProvider>
   );
