@@ -20,6 +20,10 @@ import {
   Blocks,
   Sparkles,
   MoreHorizontal,
+  Palette,
+  Smile,
+  Frame,
+  Layers,
   ChevronDown,
   ChevronLeft,
   ExternalLink,
@@ -75,8 +79,15 @@ const TOOLS = [
   { icon: ImageIcon, label: "Image Studio" },
   { icon: Blocks, label: "AI Apps" },
   { icon: Sparkles, label: "Models" },
-  { icon: MoreHorizontal, label: "More" },
 ];
+/* revealed by the More → Less expander (1:1 Ideogram) */
+const TOOLS_MORE = [
+  { icon: Palette, label: "Styles" },
+  { icon: Smile, label: "Characters" },
+  { icon: Frame, label: "Canvas" },
+  { icon: Layers, label: "Batch" },
+];
+const MORE_LABELS = TOOLS_MORE.map((t) => t.label);
 
 function NavItem({
   icon: Icon,
@@ -125,6 +136,11 @@ function SidebarInner({
   activeNav?: string;
 }) {
   const { mode, setMode } = useTheme();
+  // "More" expands the Tools list in place (Styles/Characters/Canvas/Batch);
+  // open by default when the active screen is one of those.
+  const [toolsOpen, setToolsOpen] = React.useState(
+    () => !!activeNav && MORE_LABELS.includes(activeNav),
+  );
   return (
     <div
       className={cn(
@@ -172,8 +188,35 @@ function SidebarInner({
         )}
         <nav className="mt-1 flex flex-col gap-0.5">
           {TOOLS.map((t) => (
-            <NavItem key={t.label} {...t} collapsed={collapsed} />
+            <NavItem
+              key={t.label}
+              {...t}
+              collapsed={collapsed}
+              active={activeNav === t.label}
+            />
           ))}
+          {toolsOpen &&
+            TOOLS_MORE.map((t) => (
+              <NavItem
+                key={t.label}
+                {...t}
+                collapsed={collapsed}
+                active={activeNav === t.label}
+              />
+            ))}
+          <button
+            onClick={() => setToolsOpen((v) => !v)}
+            aria-expanded={toolsOpen}
+            className={cn(
+              "flex h-9 w-full items-center rounded-md px-3 text-[13px] font-semibold text-foreground hover:bg-accent",
+              collapsed && "justify-center px-0",
+            )}
+          >
+            <MoreHorizontal className="size-5 shrink-0" strokeWidth={1.75} />
+            {!collapsed && (
+              <span className="ml-2">{toolsOpen ? "Less" : "More"}</span>
+            )}
+          </button>
         </nav>
 
         {!collapsed && (
