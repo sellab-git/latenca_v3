@@ -10,7 +10,7 @@ Poprzednia wersja projektu (folder `18. Latenca`) — **read-only reference**: s
 Wyróżnik Latenca — asystent AI, który pomaga klientowi dobrać grafikę na ścianę. Projektowany od poziomu architektury, nie doklejany na końcu. Nie ma go ani Mixtiles, ani Displate.
 
 ## Auth / onboarding model
-**NIEROZSTRZYGNIĘTE — nie wdrażać.** Kandydat (tylko pomysł): progresywny email-gate w stylu Mixtiles (email jako brama do budowania ściany/checkoutu, konto opcjonalne później). Wymaga researchu vs wiele przykładów + standardy 2026 (zadanie #13) zanim cokolwiek zbudujemy.
+**NIEROZSTRZYGNIĘTE — nie wdrażać.** Research (#13) zrobiony → **rekomendacja na stole (status: proposed), czeka na decyzję Artura:** guest-first (zero logowania aż do checkoutu, email raz przy płatności, passwordless magic-link po zakupie) na **anonimowej sesji Supabase** pod spodem (stabilny UID → jedno RLS ownership rule, darmowa migracja przy konwersji). Wymuszone konto = ~24% porzuceń (Baymard) → odrzucone. Szczegóły + implikacje schematu: `docs/decisions/auth-onboarding.md`.
 
 ## Ideogram 1:1
 Referencja UI, którą odtwarzamy 1:1 w Fazie A. **Ideogram to skóra, nie szkielet** — dostarcza język wizualny + prymitywy, ale NIE kręgosłup sklepu (brak product-detail-z-kup, buildera ściany, koszyka, checkoutu). Bloki commerce rodzą się w Fazie B (teardowny), nie z Ideograma. Screeny Ideograma NIGDY nie trafiają do repo.
