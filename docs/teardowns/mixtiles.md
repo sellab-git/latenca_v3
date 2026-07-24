@@ -65,6 +65,12 @@ Artur's question: each path configures size/frame/material differently — *why,
 
 **Tile builder (`/photos`) — verified controls:** a control bar **Frame · Size · Effect · Border** each acting **per-tile**, plus **Bulk Edit** (apply to all). **Size options (real cm, priced "each"):** 21×21 $19 · 32×32 $55 · 50×50 $125 (square) · 21×28 / 32×42 / 50×69 (portrait, $33/$55/$125) · 28×21 / 42×32 / 69×50 (landscape). So size = **3 orientations × 3 scales**, data-driven, per-tile.
 
+**Tile builder — interactions (verified live 2026-07-24, drove clone/delete):**
+- **Click a tile → per-tile edit modal:** `Drag to adjust crop` (reposition image in frame) + Frame/Size/Effect/Border + **Clone** + **Delete**.
+- **Add (Clone or upload):** tile appends to a **single horizontal row**; the whole row **re-centers**. 5 tiles = one row overflowing the viewport → **horizontal scroll. NO grid-wrap, NO composition** — the builder does not arrange a gallery wall, just lines tiles up.
+- **Delete:** tile removed, row **closes the gap + re-centers** (no empty slot persists). Price recomputes live ($55→$110→$206→$165).
+- **Takeaway for Latenca:** reuse the **click-tile→edit-modal** pattern (crop-drag, swap, per-piece material/frame, clone, delete) and **live price**; **reject the flat-row no-composition arrangement** — Latenca add/remove re-flows to a **curated layout for N** (remove → curated N−1 layout, not a row gap-close). Their Clone is global; our duplicates only on explicit user action.
+
 **THE finding — Mixtiles runs TWO OPPOSITE freedom models in one company:**
 - **Tile builder:** loose grid, size/frame/border **per-tile** → max freedom, but **a nice composition is NOT guaranteed** (easy to look messy).
 - **Wall configurator:** curated fixed layout, config **wall-level** → always looks good, but **zero arrangement freedom**, size only S/M/L.
