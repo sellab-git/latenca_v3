@@ -33,7 +33,7 @@ Run it: `pnpm dev` → http://localhost:3000/pilot/home (also /styles, /canvas, 
 **Phase A (Ideogram 1:1) — DONE.** Four screens + design base shipped and pushed.
 
 **[← RESUME HERE] Phase B — competitive teardown → commerce spine.** Ideogram gave us the skin; a shop needs the parts it doesn't have. Next:
-1. **Teardown Mixtiles + Displate** (Playwright, same pipeline). Map entry paths, browse/filter, product detail, wall builder, cart/checkout, micro-interactions → matrix "who solves X best". Findings to `docs/teardowns/` (competitor screenshots stay local, never committed).
+1. **Teardown Mixtiles + Displate + iamfy.co** (Playwright, same pipeline) — 3 sources, each checked for different angles. Map entry paths, browse/filter, product detail, wall builder, cart/checkout, identity/auth moment, micro-interactions → matrix "who solves X best". **Standing rule:** named examples are starting points — for each problem also research best-in-class 2026 patterns in real sources, don't anchor on the three (see memory `research-best-2026-not-anchor`). Findings to `docs/teardowns/` (competitor screenshots stay local, never committed).
 2. **Best-of synthesis + our IA/funnel** — per screen, pick the best pattern + where the AI advisor injects. Anchor to `18. Latenca` decisions D1–D11.
 3. **Build the commerce blocks** Ideogram lacks (ProductCard-with-buy, size/frame/material picker, wall-builder canvas, cart line, checkout steps) into `_shell`/screens.
 
